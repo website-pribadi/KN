@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Login</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<style>
+  body { margin:0; font-family:'Segoe UI', Tahoma, sans-serif; background:#ece5dd;
+    display:flex; align-items:center; justify-content:center; min-height:100vh; }
+  .box { background:#fff; padding:28px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.1); width:100%; max-width:480px; display:none; }
+  .box.active { display:block; }
+  h2 { margin:0 0 18px; color:#075e54; text-align:center; }
+  .form-group { margin-bottom:14px; }
+  .form-row { display:flex; gap:12px; }
+  .form-row .half { flex:1; }
+  label { font-size:13px; color:#333; margin-bottom:4px; display:block; }
+  input, select, textarea { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; font-size:14px; box-sizing:border-box; }
+  textarea { resize:vertical; }
+  button { width:100%; padding:12px; border:none; border-radius:8px; background:#075e54; color:#fff; font-size:15px; cursor:pointer; margin-top:8px; }
+  button:hover { background:#0a6d63; }
+  .btn-secondary { background:#ddd; color:#333; }
+  .error { color:#b00020; font-size:13px; margin-bottom:10px; text-align:center; }
+  .preview { width:90px; height:90px; border-radius:50%; object-fit:cover; display:none; margin:12px auto; border:2px solid #ccc; }
+  .link { text-align:center; font-size:13px; color:#0a6d63; cursor:pointer; margin-top:8px; }
+</style>
+</head>
+<body>
+
+<!-- Login ID -->
+<div class="box active" id="idBox">
+  <h2>Masukkan ID Akun</h2>
+  <div class="error" id="idError"></div>
+  <div class="form-group">
+    <label for="inputId">ID Akun</label>
+    <input id="inputId" type="text" placeholder="Masukkan ID Akun"/>
+  </div>
+  <button id="btnId">Lanjut</button>
+  <div class="link" id="linkGoRegister">Belum punya akun? Buat akun!</div>
+</div>
+
+<!-- Registrasi -->
+<div class="box" id="registerBox">
+  <h2>Registrasi Akun Baru</h2>
+  <div class="form-group">
+    <label for="regId">ID Akun</label>
+    <input id="regId" type="text" placeholder="Masukkan ID Akun"/>
+  </div>
+  <div class="form-group">
+    <label for="regFullname">Nama Lengkap</label>
+    <input id="regFullname" type="text" placeholder="Nama lengkap"/>
+  </div>
+  <div class="form-group">
+    <label for="regEmail">Email</label>
+    <input id="regEmail" type="email" placeholder="nama@email.com"/>
+  </div>
+  <div class="form-row">
+    <div class="form-group half">
+      <label for="regPhone">Nomor HP</label>
+      <input id="regPhone" type="text" placeholder="+628xxxx"/>
+    </div>
+    <div class="form-group half">
+      <label for="regBirth">Tanggal Lahir</label>
+      <input id="regBirth" type="date"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="regGender">Jenis Kelamin</label>
+    <select id="regGender">
+      <option value="">Pilih</option>
+      <option value="Laki-laki">Laki-laki</option>
+      <option value="Perempuan">Perempuan</option>
+      <option value="Lainnya">Lainnya</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="regAddress">Alamat</label>
+    <textarea id="regAddress" rows="2" placeholder="Alamat lengkap"></textarea>
+  </div>
+  <div class="form-group">
+    <label for="regPhoto">Foto Profil</label>
+    <input id="regPhoto" type="file" accept="image/*"/>
+    <img id="photoPreview" class="preview" alt="preview"/>
+  </div>
+  <div class="error" id="registerError"></div>
+  <button id="btnRegister">Daftar</button>
+  <button id="btnBack" class="btn-secondary">Kembali</button>
+</div>
+
+<!-- Quiz -->
+<div class="box" id="quizBox">
+  <h2>Verifikasi Kuis</h2>
+  <p id="quizQuestion" style="font-weight:600;text-align:center">Memuat soal...</p>
+  <div class="error" id="quizError"></div>
+  <div class="form-group">
+    <label for="quizAnswer">Jawaban</label>
+    <input id="quizAnswer" type="text" placeholder="Jawabanmu..."/>
+  </div>
+  <button id="btnQuiz">Kirim Jawaban</button>
+</div>
+
+<script>
+const supabase = window.supabase.createClient(
+  "https://hnsvxbohvjjfikmdjfpn.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhuc3Z4Ym9odmpqZmlrbWRqZnBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0Nzk0NDMsImV4cCI6MjA2ODA1NTQ0M30.KzOeS0md4A6jeexgXxSdfuXuBbG5L1WtFginkztaPFw"
+);
+
+let quizzes=[], selectedQuiz=null, attemptCount=0, maxAttempts=3;
+let currentId="", photoFile=null;
+
+// Ambil opponentId dari URL
+const urlParams = new URLSearchParams(window.location.search);
+const opponentId = urlParams.get("opponent") || null;
+
+// ===== Utility =====
+function showOnly(id){
+  ["idBox","registerBox","quizBox"].forEach(b=>document.getElementById(b).classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  const focusMap={idBox:"inputId", registerBox:"regId", quizBox:"quizAnswer"};
+  const el=document.getElementById(focusMap[id]);
+  if(el) el.focus();
+}
+
+// ===== Login =====
+async function loginStep(){
+  const id = document.getElementById("inputId").value.trim();
+  const idError = document.getElementById("idError");
+  idError.textContent="";
+  if(!id){ idError.textContent="ID wajib diisi."; return; }
+  currentId=id;
+
+  const {data,error} = await supabase.from("accounts").select("id").eq("id",id).maybeSingle();
+  if(error){ idError.textContent="Error: "+error.message; return; }
+  if(data) startQuiz();
+  else idError.textContent="ID belum terdaftar.";
+}
+
+// ===== Registrasi =====
+async function registerStep(){
+  const id = document.getElementById("regId").value.trim();
+  const fullname = document.getElementById("regFullname").value.trim();
+  const email = document.getElementById("regEmail").value.trim();
+  const phone = document.getElementById("regPhone").value.trim();
+  const birth = document.getElementById("regBirth").value;
+  const gender = document.getElementById("regGender").value;
+  const address = document.getElementById("regAddress").value.trim();
+  const err = document.getElementById("registerError");
+  err.textContent="";
+
+  if(!id){ err.textContent="ID tidak boleh kosong."; return; }
+  if(!fullname){ err.textContent="Nama lengkap wajib diisi."; return; }
+
+  const {data:existing} = await supabase.from("accounts").select("id").eq("id",id).maybeSingle();
+  if(existing){ err.textContent="ID sudah terdaftar."; return; }
+
+  let photoUrl="";
+  if(photoFile){
+    const filePath=`profiles/${Date.now()}-${photoFile.name}`;
+    const {error:uploadErr}=await supabase.storage.from("profile-photos").upload(filePath,photoFile);
+    if(uploadErr){ err.textContent="Gagal upload foto: "+uploadErr.message; return; }
+    const {data:publicUrlData}=supabase.storage.from("profile-photos").getPublicUrl(filePath);
+    photoUrl=publicUrlData.publicUrl;
+  }
+
+  const {error} = await supabase.from("accounts").insert([{
+    id, fullname, email, phone, birth, gender, address, photo: photoUrl
+  }]);
+  if(error){ err.textContent="Gagal simpan akun: "+error.message; return; }
+
+  alert("Akun berhasil dibuat! Silakan login dengan ID Anda.");
+  showOnly("idBox");
+  document.getElementById("inputId").value=id;
+}
+
+// ===== Photo Preview =====
+document.getElementById("regPhoto").addEventListener("change", e=>{
+  photoFile=e.target.files[0];
+  if(!photoFile) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=document.getElementById("photoPreview");
+    img.src=ev.target.result;
+    img.style.display="block";
+  };
+  reader.readAsDataURL(photoFile);
+});
+
+// ===== Quiz =====
+async function loadQuizzes(){
+  let query = supabase.from("quiz_questions").select("id,question,answer,user_id");
+  if(opponentId){
+    query = query.eq("user_id", opponentId);
+  } else if(currentId){
+    query = query.neq("user_id", currentId);
+  }
+
+  const {data,error} = await query;
+  if(error || !data?.length){
+    return [{id:1, q:"Tidak ada soal dari lawan, fallback soal:", a:["jawaban"]}];
+  }
+
+  return data.map(r => ({
+    id: r.id,
+    q: r.question,
+    a: r.answer.split(";").map(x => x.trim().toLowerCase())
+  }));
+}
+
+async function startQuiz(){
+  const idInput = document.getElementById("inputId").value.trim();
+  const idError = document.getElementById("idError");
+  idError.textContent="";
+  if(!idInput){ idError.textContent="ID wajib diisi."; return; }
+
+  currentId = idInput;
+
+  const {data,error} = await supabase.from("accounts").select("id").eq("id",currentId).maybeSingle();
+  if(error || !data){ idError.textContent="ID tidak terdaftar."; return; }
+
+  showOnly("quizBox");
+  quizzes = await loadQuizzes();
+
+  attemptCount = 0;
+  pickQuiz();
+}
+
+function pickQuiz(){
+  selectedQuiz = quizzes[Math.floor(Math.random()*quizzes.length)];
+  document.getElementById("quizQuestion").textContent = selectedQuiz.q;
+  document.getElementById("quizAnswer").value="";
+  document.getElementById("quizError").textContent="";
+}
+
+async function checkQuizAnswer(){
+  const ans = document.getElementById("quizAnswer").value.trim().toLowerCase();
+  const isCorrect = selectedQuiz.a.includes(ans);
+
+  try {
+    await supabase.from("quiz_answers").insert([{
+      question_id: selectedQuiz.id,
+      user_id: currentId,
+      answer: ans,
+      is_correct: isCorrect
+    }]);
+  } catch(e){ console.error(e); }
+
+  const qe = document.getElementById("quizError");
+
+  if(isCorrect){
+    const {data:userData} = await supabase.from("accounts").select("fullname,photo").eq("id",currentId).maybeSingle();
+    if(!userData){ alert("Gagal ambil akun"); return; }
+
+    sessionStorage.setItem("currentUser", currentId);
+    sessionStorage.setItem("quizPassed", "true");
+    sessionStorage.setItem("loggedIn", "true");
+    sessionStorage.setItem("senderName", userData.fullname);
+    sessionStorage.setItem("senderPhoto", userData.photo||"");
+
+    window.location.href = "beranda.html"; // redirect ke beranda
+  } else {
+    attemptCount++;
+    if(attemptCount >= maxAttempts){
+      qe.innerHTML = "Maaf jawaban anda salah!.<br>'Mohon di Ingat-ingat Lagi Yaa....!😢'";
+      document.getElementById("quizAnswer").disabled = true;
+    } else {
+      qe.textContent = `Salah jawaban (${attemptCount}/${maxAttempts})`;
+      document.getElementById("quizAnswer").value = "";
+      document.getElementById("quizAnswer").focus();
+    }
+  }
+}
+
+// ===== Event Listeners =====
+document.getElementById("btnId").addEventListener("click", loginStep);
+document.getElementById("linkGoRegister").addEventListener("click", ()=>{
+  currentId=document.getElementById("inputId").value.trim();
+  document.getElementById("regId").value=currentId;
+  showOnly("registerBox");
+});
+document.getElementById("btnBack").addEventListener("click", ()=>showOnly("idBox"));
+document.getElementById("btnRegister").addEventListener("click", registerStep);
+document.getElementById("btnQuiz").addEventListener("click", checkQuizAnswer);
+
+// ===== Enter Key Support =====
+["inputId","quizAnswer"].forEach(id=>{
+  document.getElementById(id).addEventListener("keydown", e=>{
+    if(e.key==="Enter"){ e.preventDefault(); document.getElementById(id==="inputId"?"btnId":"btnQuiz").click(); }
+  });
+});
+["regId","regFullname","regEmail","regPhone","regBirth","regGender","regAddress","regPhoto"].forEach(id=>{
+  document.getElementById(id).addEventListener("keydown", e=>{
+    if(e.key==="Enter"){ e.preventDefault(); document.getElementById("btnRegister").click(); }
+  });
+});
+
+// ===== Auto focus first input on load =====
+window.addEventListener("DOMContentLoaded", () => {
+  const activeBox = document.querySelector(".box.active");
+  if(activeBox){
+    const firstInput = activeBox.querySelector("input, select, textarea");
+    if(firstInput) firstInput.focus();
+  }
+});
+</script>
+</body>
+</html>
