@@ -67,7 +67,7 @@ html,body{height:100%;margin:0;overflow:hidden;background:linear-gradient(180deg
 }
 .btn:hover{opacity:0.9}
 
-/* Menu tab tombol (Soal Kuis & Riwayat Kuis) */
+/* Menu tab tombol */
 .menu-tabs{display:flex;gap:12px;margin-bottom:10px}
 .menu-tabs button{
   padding:10px 16px;border:none;border-radius:10px;
@@ -97,15 +97,34 @@ form button{
 }
 form button:hover{opacity:0.85}
 
+/* Kotak scrollable umum */
+.scroll-box {
+  max-height: 100vh;      /* tinggi maksimal kotak */
+  overflow-y: auto;       /* scroll vertikal */
+  overflow-x: auto;       /* scroll horizontal */
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(6px);
+  border:1px solid rgba(255,255,255,0.15);
+  padding:10px;
+  border-radius:var(--radius);
+}
+
 /* Daftar tugas/soal */
-.task-list{flex:1;display:flex;flex-direction:column;}
+.task-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
 .task-card{
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,0.15);
   box-shadow:0 8px 32px rgba(11,16,32,0.6);
   padding:18px;border-radius:var(--radius);
-  margin:12px 0; width:450px; max-width:90%;
+  width:100%;
+  max-width:100%;
+  margin:0;
 }
 .task-title{font-weight:600;font-size:1rem;margin-bottom:8px}
 .task-date{font-size:0.85rem;color:var(--muted);margin-bottom:8px}
@@ -119,13 +138,11 @@ form button:hover{opacity:0.85}
 .task-btns .btn-delete { background: linear-gradient(90deg, #ff5f6d, #ffc371); }
 
 .table-wrapper {
-  width:100%;flex:1;overflow-y:auto;overflow-x:auto;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(6px);
-  border:1px solid rgba(255,255,255,0.15);
-  padding:10px;border-radius:var(--radius);
+  width:100%;
+  min-width:600px;
 }
-table{width:100%;border-collapse:collapse;min-width:600px;}
+
+table{width:100%;border-collapse:collapse;}
 thead tr{background:rgba(255,255,255,0.05);}
 th, td{padding:10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.08);}
 .jawaban-benar{color:#22c55e;font-weight:600;}
@@ -136,6 +153,8 @@ th, td{padding:10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.0
   .wrap{flex-direction:column}
   .sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:12px}
   .content{padding:14px}
+
+  /* Saat layar kecil kembali jadi 1 kolom */
   .task-list{grid-template-columns:1fr}
 }
 </style>
@@ -174,8 +193,17 @@ th, td{padding:10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.0
       <button type="submit">Tambah Kuis</button>
     </form>
 
-    <div class="task-list" id="kuis-list"><div class="loading">⏳ Memuat kuis...</div></div>
-    <div id="riwayat-list" style="display:none"><div class="loading">⏳ Memuat riwayat...</div></div>
+    <!-- Kotak pembungkus daftar kuis -->
+    <div class="task-wrapper scroll-box">
+      <div class="task-list" id="kuis-list">
+        <div class="loading">⏳ Memuat kuis...</div>
+      </div>
+    </div>
+
+    <!-- Kotak riwayat jawaban -->
+    <div id="riwayat-list" style="display:none" class="scroll-box">
+      <div class="loading">⏳ Memuat riwayat...</div>
+    </div>
   </main>
 </div>
 
@@ -193,6 +221,7 @@ const kuisList = document.getElementById("kuis-list");
 const riwayatList = document.getElementById("riwayat-list");
 let editId = null;
 
+// ================= Load Profile =================
 async function loadProfile(){
   const { data } = await supabase.from("accounts").select("fullname,email,photo").eq("id",userId).maybeSingle();
   if(data){
@@ -205,12 +234,14 @@ async function loadProfile(){
   }
 }
 
+// ================= Render Kuis =================
 function renderKuis(data){
   kuisList.innerHTML = "";
   if(!data.length){ kuisList.innerHTML="<p>Belum ada kuis aktif.</p>"; return; }
   data.forEach(k=>{
     const card=document.createElement("div");
     card.className="task-card";
+    card.setAttribute("data-id", k.id);
     card.innerHTML=`
       <div class="task-title">${k.question}</div>
       <div class="task-date">Jawaban: ${k.answer}</div>
@@ -224,23 +255,39 @@ function renderKuis(data){
   });
 }
 
+// Tambah/Update kuis incremental
+function renderKuisIncremental(k, prepend=false){
+  const card = document.createElement("div");
+  card.className="task-card";
+  card.setAttribute("data-id", k.id);
+  card.innerHTML=`
+    <div class="task-title">${k.question}</div>
+    <div class="task-date">Jawaban: ${k.answer}</div>
+    <div class="task-btns">
+      <button class="btn-edit">✏️ Edit</button>
+      <button class="btn-delete">🗑️ Hapus</button>
+    </div>`;
+  card.querySelector(".btn-edit").addEventListener("click",()=>editKuis(k.id,k.question,k.answer));
+  card.querySelector(".btn-delete").addEventListener("click",()=>deleteKuis(k.id));
+  if(prepend) kuisList.prepend(card);
+  else kuisList.appendChild(card);
+}
+
+// ================= Render Riwayat =================
 function renderRiwayat(data){
-  if(!data.length){
-    riwayatList.innerHTML = "<p>Belum ada riwayat jawaban lawan.</p>";
-    return;
-  }
+  if(!data.length){ riwayatList.innerHTML = "<p>Belum ada riwayat jawaban lawan.</p>"; return; }
   let html = `<table>
       <thead><tr>
         <th>No</th><th>Nama Akun</th><th>Pertanyaan</th><th>Jawaban</th><th>Keterangan</th>
       </tr></thead><tbody>`;
-  let no = 1;
+  let no=1;
   data.forEach(row=>{
     if(row.user_id === userId) return;
     const nama = row.user?.fullname || row.user_id;
-    const pertanyaan = row.quiz_questions?.question || ("Q#" + row.question_id);
+    const pertanyaan = row.quiz_questions?.question || ("Q#"+row.question_id);
     const statusClass = row.is_correct ? "jawaban-benar" : "jawaban-salah";
     const statusText = row.is_correct ? " Benar" : " Salah";
-    html += `
+    html+=`
       <tr>
         <td>${no++}</td>
         <td>${nama}</td>
@@ -249,10 +296,11 @@ function renderRiwayat(data){
         <td class="${statusClass}">${statusText}</td>
       </tr>`;
   });
-  html += "</tbody></table>";
+  html+="</tbody></table>";
   riwayatList.innerHTML = `<div class="table-wrapper">${html}</div>`;
 }
 
+// ================= Load Data =================
 async function loadKuis(){
   kuisList.innerHTML = '<div class="loading">⏳ Memuat kuis...</div>';
   const { data, error } = await supabase.from("quiz_questions").select("*").eq("user_id",userId).order("created_at",{ascending:false});
@@ -272,6 +320,7 @@ async function loadRiwayat(){
   renderRiwayat(data);
 }
 
+// ================= Fungsi Edit/Hapus =================
 function editKuis(id,question,answer){
   editId=id;
   document.getElementById("question").value=question;
@@ -282,49 +331,108 @@ function editKuis(id,question,answer){
 async function deleteKuis(id){
   if(!confirm("Hapus kuis ini?")) return;
   await supabase.from("quiz_questions").delete().eq("id",id).eq("user_id",userId);
+  const card = kuisList.querySelector(`.task-card[data-id='${id}']`);
+  if(card) card.remove();
 }
 
-form.addEventListener("submit",async e=>{
+// ================= Event Form =================
+form.addEventListener("submit", async e=>{
   e.preventDefault();
-  const question=document.getElementById("question").value.trim();
-  const correct=document.getElementById("correct").value.trim();
+  const question = document.getElementById("question").value.trim();
+  const correct = document.getElementById("correct").value.trim();
+
   if(editId){
-    await supabase.from("quiz_questions").update({question,answer:correct}).eq("id",editId).eq("user_id",userId);
+    const { data, error } = await supabase.from("quiz_questions").update({question,answer:correct}).eq("id",editId).eq("user_id",userId).select();
+    if(data && data.length){
+      const card = kuisList.querySelector(`.task-card[data-id='${editId}']`);
+      if(card){
+        card.querySelector(".task-title").textContent = question;
+        card.querySelector(".task-date").textContent = "Jawaban: "+correct;
+      }
+    }
     editId=null;
   } else {
-    await supabase.from("quiz_questions").insert([{question,answer:correct,user_id:userId}]);
+    // insert dan ambil row lengkap
+    const { data, error } = await supabase.from("quiz_questions").insert([{question,answer:correct,user_id:userId}]).select();
+    if(data && data.length) renderKuisIncremental(data[0], true);
   }
+
   form.reset();
 });
 
-document.getElementById("btn-logout").addEventListener("click",()=>{
-  sessionStorage.clear(); alert("Anda telah logout."); window.location.href="index.html";
+// ================= Logout =================
+document.getElementById("btn-logout").addEventListener("click", ()=>{
+  sessionStorage.clear();
+  alert("Anda telah logout.");
+  window.location.href="index.html";
 });
 
-document.getElementById("tab-active").addEventListener("click",()=>{
+// ================= Tab =================
+document.getElementById("tab-active").addEventListener("click", ()=>{
   document.getElementById("tab-active").classList.add("active");
   document.getElementById("tab-history").classList.remove("active");
-  form.style.display="flex"; kuisList.style.display="flex"; riwayatList.style.display="none";
+  form.style.display="flex"; 
+  document.querySelector(".task-wrapper").style.display="block"; 
+  riwayatList.style.display="none";
   loadKuis();
 });
 
-document.getElementById("tab-history").addEventListener("click",()=>{
+document.getElementById("tab-history").addEventListener("click", ()=>{
   document.getElementById("tab-history").classList.add("active");
   document.getElementById("tab-active").classList.remove("active");
-  form.style.display="none"; kuisList.style.display="none"; riwayatList.style.display="block";
+  form.style.display="none"; 
+  document.querySelector(".task-wrapper").style.display="none"; 
+  riwayatList.style.display="block";
   loadRiwayat();
 });
 
-// realtime
-supabase.channel('quiz-rt')
-  .on('postgres_changes',{event:'*',schema:'public',table:'quiz_questions'},payload=>{
-    if(document.getElementById("tab-active").classList.contains("active")) loadKuis();
-  })
-  .on('postgres_changes',{event:'*',schema:'public',table:'quiz_answers'},payload=>{
-    if(document.getElementById("tab-history").classList.contains("active")) loadRiwayat();
-  })
-  .subscribe();
+// ================= Realtime Full =================
+const quizChannel = supabase.channel('quiz-rt');
 
+// Quiz baru
+quizChannel.on('postgres_changes', 
+  { event: 'INSERT', schema: 'public', table: 'quiz_questions' }, 
+  payload => {
+    if(document.getElementById("tab-active").classList.contains("active")) renderKuisIncremental(payload.new, true);
+  }
+);
+
+// Edit quiz
+quizChannel.on('postgres_changes', 
+  { event: 'UPDATE', schema: 'public', table: 'quiz_questions' }, 
+  payload => {
+    if(document.getElementById("tab-active").classList.contains("active")){
+      const card = kuisList.querySelector(`.task-card[data-id='${payload.new.id}']`);
+      if(card){
+        card.querySelector(".task-title").textContent = payload.new.question;
+        card.querySelector(".task-date").textContent = "Jawaban: " + payload.new.answer;
+      }
+    }
+  }
+);
+
+// Hapus quiz
+quizChannel.on('postgres_changes', 
+  { event: 'DELETE', schema: 'public', table: 'quiz_questions' }, 
+  payload => {
+    if(document.getElementById("tab-active").classList.contains("active")){
+      const card = kuisList.querySelector(`.task-card[data-id='${payload.old.id}']`);
+      if(card) card.remove();
+    }
+  }
+);
+
+// Riwayat jawaban
+quizChannel.on('postgres_changes',
+  { event:'*', schema:'public', table:'quiz_answers' },
+  payload=>{
+    if(document.getElementById("tab-history").classList.contains("active")) loadRiwayat();
+  }
+);
+
+quizChannel.subscribe();
+
+// ================= Load awal =================
 loadProfile();
 loadKuis();
 </script>

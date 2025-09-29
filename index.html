@@ -6,23 +6,38 @@
 <title>Login</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <style>
-  body { margin:0; font-family:'Segoe UI', Tahoma, sans-serif; background:#ece5dd;
-    display:flex; align-items:center; justify-content:center; min-height:100vh; }
-  .box { background:#fff; padding:28px; border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,0.1); width:100%; max-width:480px; display:none; }
-  .box.active { display:block; }
-  h2 { margin:0 0 18px; color:#075e54; text-align:center; }
-  .form-group { margin-bottom:14px; }
-  .form-row { display:flex; gap:12px; }
-  .form-row .half { flex:1; }
-  label { font-size:13px; color:#333; margin-bottom:4px; display:block; }
-  input, select, textarea { width:100%; padding:10px; border:1px solid #ccc; border-radius:8px; font-size:14px; box-sizing:border-box; }
-  textarea { resize:vertical; }
-  button { width:100%; padding:12px; border:none; border-radius:8px; background:#075e54; color:#fff; font-size:15px; cursor:pointer; margin-top:8px; }
-  button:hover { background:#0a6d63; }
-  .btn-secondary { background:#ddd; color:#333; }
-  .error { color:#b00020; font-size:13px; margin-bottom:10px; text-align:center; }
-  .preview { width:90px; height:90px; border-radius:50%; object-fit:cover; display:none; margin:12px auto; border:2px solid #ccc; }
-  .link { text-align:center; font-size:13px; color:#0a6d63; cursor:pointer; margin-top:8px; }
+:root{
+  --bg:#0b1020; --card:#111421; --accent:#00d4ff; --accent-2:#8b5cf6;
+  --muted:#9aa3b2; --glass: rgba(255,255,255,0.08); --radius:18px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#071022);color:#e8eef6;
+display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.box {
+  background: var(--glass); backdrop-filter: blur(12px); padding:28px; border-radius:var(--radius);
+  width:100%; max-width:480px; display:none; border:1px solid rgba(255,255,255,0.1); box-shadow:0 6px 20px rgba(0,0,0,0.2);
+}
+.box.active { display:block; }
+h2 { margin:0 0 18px; color:var(--accent); text-align:center; }
+.form-group { margin-bottom:14px; }
+.form-row { display:flex; gap:12px; }
+.form-row .half { flex:1; }
+label { font-size:13px; color:var(--muted); margin-bottom:4px; display:block; }
+input, select, textarea {
+  width:100%; padding:10px; border:1px solid rgba(255,255,255,0.2); border-radius:8px;
+  font-size:14px; background:rgba(255,255,255,0.05); color:#e8eef6;
+}
+input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.5); }
+textarea { resize:vertical; }
+button { width:100%; padding:12px; border:none; border-radius:8px;
+  background: linear-gradient(90deg,var(--accent),var(--accent-2)); color:#041021; font-size:15px; cursor:pointer; margin-top:8px; font-weight:700;
+}
+button.btn-secondary { background: rgba(255,255,255,0.1); color:var(--muted); }
+button:hover { opacity:0.9; }
+.error { color:#ff6b6b; font-size:13px; margin-bottom:10px; text-align:center; }
+.preview { width:90px; height:90px; border-radius:50%; object-fit:cover; display:none; margin:12px auto; border:2px solid var(--accent); }
+.link { text-align:center; font-size:13px; color:var(--accent); cursor:pointer; margin-top:8px; }
 </style>
 </head>
 <body>
@@ -36,7 +51,7 @@
     <input id="inputId" type="text" placeholder="Masukkan ID Akun"/>
   </div>
   <button id="btnId">Lanjut</button>
-  <div class="link" id="linkGoRegister">Belum punya akun? Buat akun!</div>
+  <div class="link" id="linkGoRegister">Klik Untuk Buat Akun!</div>
 </div>
 
 <!-- Registrasi -->
@@ -112,7 +127,6 @@ let currentId="", photoFile=null;
 const urlParams = new URLSearchParams(window.location.search);
 const opponentId = urlParams.get("opponent") || null;
 
-// ===== Utility =====
 function showOnly(id){
   ["idBox","registerBox","quizBox"].forEach(b=>document.getElementById(b).classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -121,7 +135,6 @@ function showOnly(id){
   if(el) el.focus();
 }
 
-// ===== Login =====
 async function loginStep(){
   const id = document.getElementById("inputId").value.trim();
   const idError = document.getElementById("idError");
@@ -135,7 +148,6 @@ async function loginStep(){
   else idError.textContent="ID belum terdaftar.";
 }
 
-// ===== Registrasi =====
 async function registerStep(){
   const id = document.getElementById("regId").value.trim();
   const fullname = document.getElementById("regFullname").value.trim();
@@ -172,7 +184,6 @@ async function registerStep(){
   document.getElementById("inputId").value=id;
 }
 
-// ===== Photo Preview =====
 document.getElementById("regPhoto").addEventListener("change", e=>{
   photoFile=e.target.files[0];
   if(!photoFile) return;
@@ -185,7 +196,6 @@ document.getElementById("regPhoto").addEventListener("change", e=>{
   reader.readAsDataURL(photoFile);
 });
 
-// ===== Quiz =====
 async function loadQuizzes(){
   let query = supabase.from("quiz_questions").select("id,question,answer,user_id");
   if(opponentId){
@@ -270,7 +280,6 @@ async function checkQuizAnswer(){
   }
 }
 
-// ===== Event Listeners =====
 document.getElementById("btnId").addEventListener("click", loginStep);
 document.getElementById("linkGoRegister").addEventListener("click", ()=>{
   currentId=document.getElementById("inputId").value.trim();
@@ -281,7 +290,6 @@ document.getElementById("btnBack").addEventListener("click", ()=>showOnly("idBox
 document.getElementById("btnRegister").addEventListener("click", registerStep);
 document.getElementById("btnQuiz").addEventListener("click", checkQuizAnswer);
 
-// ===== Enter Key Support =====
 ["inputId","quizAnswer"].forEach(id=>{
   document.getElementById(id).addEventListener("keydown", e=>{
     if(e.key==="Enter"){ e.preventDefault(); document.getElementById(id==="inputId"?"btnId":"btnQuiz").click(); }
@@ -293,7 +301,6 @@ document.getElementById("btnQuiz").addEventListener("click", checkQuizAnswer);
   });
 });
 
-// ===== Auto focus first input on load =====
 window.addEventListener("DOMContentLoaded", () => {
   const activeBox = document.querySelector(".box.active");
   if(activeBox){
