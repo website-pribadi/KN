@@ -14,35 +14,95 @@
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     }
     *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#071022);color:#e8eef6}
-    .wrap{display:flex;min-height:100vh}
-    .sidebar{
-        width:260px;padding:28px;background:linear-gradient(180deg,var(--card), rgba(17,20,33,0.6));backdrop-filter:blur(10px);
-        border-right:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:18px
+
+    html,body{
+        height:100%;
+        margin:0;
+        overflow:hidden;
+        background:linear-gradient(180deg,var(--bg),#071022);
+        color:#e8eef6;
     }
+
+    .wrap{display:flex;height:100%}
+
+    .sidebar{
+        width:260px;
+        padding:28px;
+        background:linear-gradient(180deg,var(--card), rgba(17,20,33,0.6));
+        backdrop-filter:blur(10px);
+        border-right:1px solid rgba(255,255,255,0.03);
+        display:flex;
+        flex-direction:column;
+        gap:18px;
+    }
+
     .logo{display:flex;gap:12px;align-items:center}
     .logo img{width:44px;height:44px;border-radius:10px;object-fit:cover}
     .logo .title{font-weight:700;font-size:1.05rem}
-    .profile-card{background:var(--glass);padding:14px;border-radius:12px;display:flex;gap:12px;align-items:center; border: 1px solid rgba(255,255,255,0.1)}
-    .avatar{width:56px;height:56px;border-radius:12px;border:2px solid var(--accent-2);overflow:hidden}
-    .avatar img{width:100%;height:100%;object-fit:cover}
-    .p-info{flex:1}
+
+    .profile-card{
+        background:var(--glass);
+        padding:14px;
+        border-radius:12px;
+        display:flex;
+        flex-direction:column;
+        gap:4px;
+        border: 1px solid rgba(255,255,255,0.1)
+    }
     .p-info h3{margin:0;font-size:0.95rem}
     .p-info small{color:var(--muted)}
+
     .nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
-    .nav a{padding:10px;border-radius:10px;text-decoration:none;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
-    .nav a:hover{background:linear-gradient(90deg, rgba(0,212,255,0.1), rgba(139,92,246,0.08));color:var(--accent)}
-    
-    .content{flex:1;padding:32px;display:flex;flex-direction:column;gap:28px}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;}
-    .top h1 {margin:0; font-size:1.8rem; font-weight:800; background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
-    
+    .nav a{
+        padding:10px;
+        border-radius:10px;
+        text-decoration:none;
+        color:var(--muted);
+        display:flex;
+        justify-content:space-between;
+        align-items:center
+    }
+    .nav a:hover{
+        background:linear-gradient(90deg, rgba(0,212,255,0.1), rgba(139,92,246,0.08));
+        color:var(--accent)
+    }
+
+    .content{
+        flex:1;
+        display:flex;
+        flex-direction:column;
+        padding:32px;
+        gap:28px;
+        height:100%;
+        overflow:hidden;
+    }
+
+    .top{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:12px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        padding-bottom: 15px;
+    }
+    .top h1 {
+        margin:0;
+        font-size:1.8rem;
+        font-weight:800;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
     .grid{
+        flex:1;
         display:grid;
         grid-template-columns: 2fr 1fr;
-        grid-template-rows: auto auto;
+        grid-template-rows: auto 1fr;
         gap: 20px;
+        overflow:hidden;
     }
+
     .card{
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(8px);
@@ -51,45 +111,71 @@
         padding: 24px;
         border-radius: var(--radius);
         min-height: 180px;
+        display:flex;
+        flex-direction:column;
+        overflow:hidden;
     }
+
     #card-tugas { grid-column: 1 / 2; grid-row: 1 / 3; }
     #card-motivasi { grid-column: 2 / 3; }
     #card-pesan { grid-column: 2 / 3; }
 
-    .card h4{margin:0 0 15px 0; color:var(--accent-2); font-size:1.1rem; border-bottom: 2px solid rgba(139,92,246,0.2); padding-bottom: 8px;}
+    .card h4{
+        margin:0 0 15px 0;
+        color:var(--accent-2);
+        font-size:1.1rem;
+        border-bottom: 2px solid rgba(139,92,246,0.2);
+        padding-bottom: 8px;
+    }
+
     .task{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
     .task:last-child {border-bottom: none;}
     .task .title{font-weight:600;}
     .task small{color:var(--muted); font-size:0.85rem;}
-    .btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041021;font-weight:700}
+
+    .btn{
+        padding:8px 12px;
+        border-radius:10px;
+        border:none;
+        cursor:pointer;
+        background:linear-gradient(90deg,var(--accent),var(--accent-2));
+        color:#041021;
+        font-weight:700
+    }
 
     #quote { font-style: italic; font-size: 1.15rem; color: var(--accent); line-height: 1.6; }
+
     .message-item { margin-bottom: 12px; padding-left: 10px; border-left: 3px solid var(--accent); }
     .message-item strong { display: block; font-size: 0.95rem; }
     .message-item .text { color: var(--muted); font-size: 0.85rem; }
 
-    /* 🎯 Tambahan biar pesan bisa discroll */
     #list-pesan {
-        max-height: 200px;     /* sesuaikan tinggi maksimal */
-        overflow-y: auto;
+        flex:1;
+        overflow-y:auto;
         padding-right: 6px;
     }
-    #list-pesan::-webkit-scrollbar {
-        width: 6px;
+    #list-pesan::-webkit-scrollbar { width: 6px; }
+    #list-pesan::-webkit-scrollbar-thumb { background: var(--accent-2); border-radius: 4px; }
+    #list-pesan::-webkit-scrollbar-track { background: transparent; }
+
+    #list-tugas {
+        flex:1;
+        overflow-y:auto;
+        padding-right: 6px;
     }
-    #list-pesan::-webkit-scrollbar-thumb {
-        background: var(--accent-2);
-        border-radius: 4px;
-    }
-    #list-pesan::-webkit-scrollbar-track {
-        background: transparent;
-    }
+    #list-tugas::-webkit-scrollbar { width: 6px; }
+    #list-tugas::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+    #list-tugas::-webkit-scrollbar-track { background: transparent; }
 
     @media (max-width:920px){
-        .grid{ grid-template-columns: 1fr; grid-template-rows: auto; }
+        .grid{ grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
         #card-tugas, #card-motivasi, #card-pesan { grid-column: 1 / 2; grid-row: auto; }
     }
-    @media (max-width:640px){.wrap{flex-direction:column}.sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:12px}.content{padding:14px}}
+    @media (max-width:640px){
+        .wrap{flex-direction:column}
+        .sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:12px}
+        .content{padding:14px}
+    }
 </style>
 </head>
 <body>
@@ -103,12 +189,10 @@
                 </div>
             </div>
             <div class="profile-card">
-                <div class="avatar"><img id="avatar-user" src="profil2.png" alt="avatar"></div>
                 <div class="p-info">
                     <h3 id="nama-user">--</h3>
                     <small id="email-user">--</small>
                 </div>
-                <button id="btn-logout" class="btn" style="padding:6px 8px">Keluar</button>
             </div>
             <nav class="nav">
                 <a href="beranda.html" class="active">Beranda <small>›</small></a>
@@ -125,11 +209,14 @@
         <main class="content">
             <div class="top">
                 <h1>Selamat Datang, <span id="welcome-name">...</span>!</h1>
-                <div style="color:var(--muted)">Hari ini: <span id="hari-nama">-</span>, <span id="tanggal">-</span></div>
+                <div style="margin-left:auto; display:flex; align-items:center; gap:15px;">
+                    <div style="color:var(--muted)">Hari ini: <span id="hari-nama">-</span>, <span id="tanggal">-</span></div>
+                    <button id="btn-logout" class="btn" style="padding:6px 12px;">Keluar</button>
+                </div>
             </div>
             <div class="grid">
                 <section class="card" id="card-tugas">
-                    <h4>Tugas Hari Ini</h4>
+                    <h4>Daftar Tugas</h4>
                     <div id="list-tugas">Memuat...</div>
                 </section>
 
@@ -146,7 +233,6 @@
         </main>
     </div>
 
-
 <script>
 const userId = sessionStorage.getItem("currentUser");
 if (!userId) {
@@ -159,7 +245,6 @@ const supabase = window.supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhuc3Z4Ym9odmpqZmlrbWRqZnBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0Nzk0NDMsImV4cCI6MjA2ODA1NTQ0M30.KzOeS0md4A6jeexgXxSdfuXuBbG5L1WtFginkztaPFw"
 );
 
-// ================== Profil User ==================
 async function loadProfile() {
   const { data, error } = await supabase
     .from("accounts")
@@ -174,13 +259,11 @@ async function loadProfile() {
     document.getElementById("nama-user").textContent = data.fullname || "--";
     document.getElementById("email-user").textContent = data.email || "--";
     if (data.photo) {
-      document.getElementById("avatar-user").src = data.photo;
       document.getElementById("ikon-user").src = data.photo;
     }
   }
 }
 
-// ================== Tugas ==================
 async function loadTugas() {
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString(); 
@@ -193,8 +276,7 @@ async function loadTugas() {
     .eq("is_done", false)
     .lte("tanggal_awal", endOfToday)
     .gte("tanggal_akhir", startOfToday)
-    .order("tanggal_akhir", { ascending: true })
-    .limit(5);
+    .order("tanggal_akhir", { ascending: true });
 
   const el = document.getElementById("list-tugas");
   if (error) { 
@@ -220,8 +302,7 @@ async function loadTugas() {
         <button class="btn btn-selesai" data-id="${t.id}" style="padding:4px 8px; font-size:0.8rem">Selesai</button>
       </div>
     `;
-  }).join('') + 
-  '<a href="tugas.html" class="btn" style="display:block; text-align:center; margin-top:15px; background:var(--glass); color:var(--accent);">Lihat Semua Tugas</a>';
+  }).join('');
 
   document.querySelectorAll('.btn-selesai').forEach(button => {
     button.addEventListener('click', (e) => {
@@ -246,7 +327,6 @@ async function markAsDoneAndReload(taskId) {
   }
 }
 
-// ================== Motivasi ==================
 function loadMotivasi() {
   const quotes = [
     "Satu-satunya cara untuk melakukan pekerjaan hebat adalah mencintai apa yang Anda lakukan.",
@@ -260,14 +340,12 @@ function loadMotivasi() {
   quoteEl.textContent = quotes[randomIndex];
 }
 
-// ================== Logout ==================
 document.getElementById('btn-logout').addEventListener('click', () => {
   sessionStorage.removeItem("currentUser");
   alert("Anda telah keluar.");
   window.location.href = "index.html";
 });
 
-// ================== Pesan Terbaru Realtime ==================
 async function loadPesanRealtime() {
   const el = document.getElementById("list-pesan");
 
@@ -285,33 +363,30 @@ async function loadPesanRealtime() {
       <a href="chat.html" class="btn" style="display:block; text-align:center; margin-top:15px; background:var(--glass); color:var(--accent);">Buka Chat</a>
     `;
 
-    // 🎯 Auto scroll ke paling bawah
     el.scrollTop = el.scrollHeight;
   }
 
-async function fetchLatestPesan() {
-  const { data, error } = await supabase
-    .from("messages")
-    .select("text, sender:accounts!messages_sender_fkey(fullname)")
-    .order("created_at", { descending: true })
-    .limit(20); // ambil 20 pesan terbaru
+  async function fetchLatestPesan() {
+    const { data, error } = await supabase
+      .from("messages")
+      .select("text, sender:accounts!messages_sender_fkey(fullname)")
+      .order("created_at", { descending: true })
+      .limit(20);
 
-  if (error) {
-    console.error("Gagal memuat pesan:", error);
-    return [];
+    if (error) {
+      console.error("Gagal memuat pesan:", error);
+      return [];
+    }
+
+    return Array.isArray(data) ? data.map(p => ({
+      text: p.text,
+      sender_name: p.sender?.fullname || "Anonim"
+    })) : [];
   }
 
-  return Array.isArray(data) ? data.map(p => ({
-    text: p.text,
-    sender_name: p.sender?.fullname || "Anonim"
-  })) : [];
-}
-
-  // Fetch awal
   let pesanList = await fetchLatestPesan();
   renderPesan(pesanList);
 
-  // Realtime update
   supabase.channel('realtime-messages')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async () => {
       const pesanList = await fetchLatestPesan();
@@ -320,7 +395,6 @@ async function fetchLatestPesan() {
     .subscribe();
 }
 
-// ================== Inisialisasi Halaman ==================
 const sekarang = new Date();
 document.getElementById('hari-nama').textContent = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][sekarang.getDay()];
 document.getElementById('tanggal').textContent = sekarang.toLocaleDateString('id-ID');

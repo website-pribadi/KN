@@ -1,198 +1,295 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Tugas</title>
-    <link rel="icon" href="ikon2.png" type="image/png">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <style>
-        :root{
-            --bg:#0b1020;
-            --card:#111421;
-            --accent:#00d4ff;
-            --accent-2:#8b5cf6;
-            --muted:#9aa3b2;
-            --glass: rgba(255,255,255,0.04);
-            --radius:14px;
-            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-        }
-        *{box-sizing:border-box}
-        html,body{height:100%;margin:0;overflow-x:hidden;background:linear-gradient(180deg,var(--bg),#071022);color:#e8eef6}
-        .wrap{display:flex;min-height:100vh}
-        .sidebar{width:260px;padding:28px;background:linear-gradient(180deg,var(--card), rgba(17,20,33,0.6));backdrop-filter:blur(6px);border-right:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:18px}
-        .logo{display:flex;gap:12px;align-items:center}
-        .logo img{width:44px;height:44px;border-radius:10px;object-fit:cover}
-        .logo .title{font-weight:700;font-size:1.05rem}
-        .profile-card{background:var(--glass);padding:14px;border-radius:12px;display:flex;gap:12px;align-items:center}
-        .avatar{width:56px;height:56px;border-radius:12px;border:2px solid rgba(255,255,255,0.06);overflow:hidden}
-        .avatar img{width:100%;height:100%;object-fit:cover}
-        .p-info{flex:1}
-        .p-info h3{margin:0;font-size:0.95rem}
-        .p-info small{color:var(--muted)}
-        .nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
-        .nav a{padding:10px;border-radius:10px;text-decoration:none;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
-        .nav a:hover{background:linear-gradient(90deg, rgba(0,212,255,0.06), rgba(139,92,246,0.04));color:var(--accent)}
-        .content{flex:1;padding:28px;display:flex;flex-direction:column;gap:22px}
-        .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
-        form{background:var(--card);padding:18px;border-radius:var(--radius);display:flex;flex-direction:column;gap:12px;max-width:600px}
-        form input, form button{padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:inherit;font-size:1rem}
-        form button{border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041021;font-weight:700;cursor:pointer}
-        .task-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;max-width:1200px;margin-top:12px}
-        .task-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:var(--radius);display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 6px 30px rgba(11,16,32,0.5)}
-        .task-title{font-weight:600;font-size:1rem;margin-bottom:8px}
-        .task-date{font-size:0.85rem;color:var(--muted);margin-bottom:12px}
-        .task-btns{display:flex;gap:8px;justify-content:flex-end; margin-top: auto;}
-        .task-btns button{flex:1;padding:8px;border:none;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041021;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
-        .task-btns button:hover{opacity:0.85}
-        .task-btns .btn-delete { background: linear-gradient(90deg, #ff5f6d, #ffc371); }
-        .task-btns button span:first-child { font-size:1rem; }
-        .task-btns button span:last-child { font-weight:600; }
-        #btn-logout { background: linear-gradient(90deg,var(--accent),var(--accent-2)); color:#041021; font-weight:700; border:none; padding:8px 12px; cursor:pointer; border-radius:8px;}
-        #btn-logout:hover { opacity:0.85; }
-        @media (max-width:640px){.wrap{flex-direction:column}.sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:12px}.content{padding:14px}.task-list{grid-template-columns:1fr}}
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Tugas</title>
+  <link rel="icon" href="ikon2.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    :root {
+      --bg:#0b1020; --card:#111421;
+      --accent:#00d4ff; --accent-2:#8b5cf6;
+      --muted:#9aa3b2; --glass: rgba(255,255,255,0.04);
+      --radius:14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    }
+    * { box-sizing:border-box; }
+
+    html,body {
+      height:100%; margin:0;
+      background:linear-gradient(180deg,var(--bg),#071022);
+      color:#e8eef6;
+      overflow:hidden;
+    }
+
+    .wrap { display:flex; height:100%; }
+
+    /* Sidebar */
+    .sidebar {
+      width:260px; padding:28px;
+      background:linear-gradient(180deg,var(--card),rgba(17,20,33,0.6));
+      backdrop-filter:blur(8px);
+      border-right:1px solid rgba(255,255,255,0.05);
+      display:flex; flex-direction:column; gap:18px;
+    }
+    .logo { display:flex; gap:12px; align-items:center; }
+    .logo img { width:44px; height:44px; border-radius:10px; object-fit:cover; }
+    .logo .title { font-weight:700; font-size:1.05rem; }
+    .profile-card {
+      background:var(--glass);
+      padding:14px; border-radius:12px;
+      display:flex; flex-direction:column; gap:4px;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+    .p-info h3 { margin:0; font-size:0.95rem; }
+    .p-info small { color:var(--muted); }
+    .nav { display:flex; flex-direction:column; gap:8px; margin-top:6px; }
+    .nav a {
+      padding:10px; border-radius:10px;
+      text-decoration:none; color:var(--muted);
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .nav a:hover {
+      background:linear-gradient(90deg,rgba(0,212,255,0.06),rgba(139,92,246,0.04));
+      color:var(--accent);
+    }
+
+    /* Content */
+    .content {
+      flex:1; display:flex; flex-direction:column;
+      padding:28px; gap:22px;
+      height:100%; overflow:hidden;
+    }
+    .top {
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      padding-bottom:12px;
+    }
+    .top h2 { margin:0; font-size:1.5rem; font-weight:700; }
+    #btn-logout {
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:#041021; font-weight:700;
+      border:none; padding:8px 14px; border-radius:8px;
+      cursor:pointer;
+    }
+    #btn-logout:hover { opacity:0.85; }
+
+    /* Form */
+    form {
+      background:var(--card);
+      padding:18px; border-radius:var(--radius);
+      display:flex; flex-direction:column; gap:12px;
+      max-width:600px;
+    }
+    form input, form button {
+      padding:12px; border-radius:10px;
+      border:1px solid rgba(255,255,255,0.1);
+      background:transparent; color:inherit; font-size:1rem;
+    }
+    form button {
+      border:none;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:#041021; font-weight:700; cursor:pointer;
+    }
+    form button:hover { opacity:0.9; }
+
+    /* Task list */
+    .task-list {
+      flex:1;
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+      gap:18px; overflow-y:auto; padding-right:6px;
+    }
+    .task-list::-webkit-scrollbar { width:6px; }
+    .task-list::-webkit-scrollbar-thumb { background:var(--accent); border-radius:4px; }
+    .task-card {
+      background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+      padding:18px; border-radius:var(--radius);
+      display:flex; flex-direction:column;
+      box-shadow:0 6px 30px rgba(11,16,32,0.5);
+    }
+    .task-title { font-weight:600; font-size:1rem; margin-bottom:8px; }
+    .task-date { font-size:0.85rem; color:var(--muted); margin-bottom:12px; }
+    .task-btns { display:flex; gap:8px; margin-top:auto; }
+    .task-btns button {
+      flex:1; padding:8px;
+      border:none; border-radius:8px;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:#041021; font-weight:700; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:6px;
+    }
+    .task-btns button:hover { opacity:0.85; }
+    .task-btns .btn-delete {
+      background:linear-gradient(90deg,#ff5f6d,#ffc371);
+    }
+
+    @media (max-width:640px) {
+      .wrap { flex-direction:column; }
+      .sidebar { width:100%; flex-direction:row; overflow-x:auto; padding:12px; }
+      .content { padding:14px; }
+      .task-list { grid-template-columns:1fr; }
+    }
+  </style>
 </head>
 <body>
-    <div class="wrap">
-        <aside class="sidebar">
-            <div class="logo">
-                <img id="ikon-user" src="profil2.png" alt="ikon">
-                <div><div class="title">MyDashboard</div><small style="color:var(--muted)">Selamat datang</small></div>
-            </div>
-            <div class="profile-card">
-                <div class="avatar"><img id="avatar-user" src="profil2.png" alt="avatar"></div>
-                <div class="p-info"><h3 id="nama-user">--</h3><small id="email-user">--</small></div>
-                <button id="btn-logout">Keluar</button>
-            </div>
-            <nav class="nav">
-                <a href="beranda.html">Beranda <small>›</small></a>
-                <a href="profil.html">Profil <small>›</small></a>
-                <a href="tugas.html" class="active">Tugas <small>›</small></a>
-                <a href="chat.html">Pesan <small>›</small></a>
-                <a href="kuis.html">Menejemen Kuis<small>›</small></a>
-            </nav>
-            <div style="margin-top:auto;color:var(--muted);font-size:0.85rem">Versi alpha • &copy; 2025</div>
-        </aside>
-        <main class="content">
-            <div class="top"><h2>Daftar Tugas</h2></div>
-            <form id="task-form">
-                <input type="text" id="judul" placeholder="Nama Tugas" required />
-                <input type="date" id="tanggal_awal" required />
-                <input type="date" id="tanggal_akhir" required />
-                <button type="submit">Tambah Tugas</button>
-            </form>
-            <div class="task-list" id="task-list">Memuat tugas...</div>
-        </main>
-    </div>
+  <div class="wrap">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <img id="ikon-user" src="profil2.png" alt="ikon">
+        <div>
+          <div class="title">MyDashboard</div>
+          <small style="color:var(--muted)">Selamat datang</small>
+        </div>
+      </div>
+      <div class="profile-card">
+        <div class="p-info">
+          <h3 id="nama-user">--</h3>
+          <small id="email-user">--</small>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="beranda.html">Beranda <small>›</small></a>
+        <a href="profil.html">Profil <small>›</small></a>
+        <a href="tugas.html" class="active">Tugas <small>›</small></a>
+        <a href="chat.html">Pesan <small>›</small></a>
+        <a href="kuis.html">Menejemen Kuis <small>›</small></a>
+      </nav>
+      <div style="margin-top:auto;color:var(--muted);font-size:0.85rem">
+        Versi alpha • &copy; 2025
+      </div>
+    </aside>
 
-    <script>
-        const supabase = window.supabase.createClient(
-            "https://hnsvxbohvjjfikmdjfpn.supabase.co", 
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhuc3Z4Ym9odmpqZmlrbWRqZnBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0Nzk0NDMsImV4cCI6MjA2ODA1NTQ0M30.KzOeS0md4A6jeexgXxSdfuXuBbG5L1WtFginkztaPFw"
+    <!-- Content -->
+    <main class="content">
+      <div class="top">
+        <h2>Daftar Tugas</h2>
+        <button id="btn-logout">Keluar</button>
+      </div>
+
+      <form id="task-form">
+        <input type="text" id="judul" placeholder="Nama Tugas" required />
+        <input type="date" id="tanggal_awal" required />
+        <input type="date" id="tanggal_akhir" required />
+        <button type="submit">Tambah Tugas</button>
+      </form>
+
+      <div class="task-list" id="task-list">Memuat tugas...</div>
+    </main>
+  </div>
+
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://hnsvxbohvjjfikmdjfpn.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhuc3Z4Ym9odmpqZmlrbWRqZnBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0Nzk0NDMsImV4cCI6MjA2ODA1NTQ0M30.KzOeS0md4A6jeexgXxSdfuXuBbG5L1WtFginkztaPFw"
+    );
+
+    const userId = sessionStorage.getItem("currentUser");
+    if (!userId) {
+      alert("Silakan login dulu!");
+      window.location.href = "index.html";
+    }
+
+    const taskList = document.getElementById("task-list");
+    const form = document.getElementById("task-form");
+    let editId = null;
+
+    async function loadProfile() {
+      const { data } = await supabase.from("accounts")
+        .select("fullname,email,photo").eq("id", userId).maybeSingle();
+      if (data) {
+        document.getElementById("nama-user").textContent = data.fullname || "Tanpa Nama";
+        document.getElementById("email-user").textContent = data.email || "Tidak ada email";
+        if (data.photo) {
+          document.getElementById("ikon-user").src = data.photo;
+        }
+      }
+    }
+
+    function formatTanggal(tanggal) {
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Date(tanggal).toLocaleDateString('id-ID', options);
+    }
+
+    async function loadTasks() {
+      const { data, error } = await supabase.from("tugas")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("is_done", false)
+        .order("tanggal_awal",{ascending:true});
+
+      taskList.innerHTML = "";
+      if (error) {
+        taskList.innerHTML = "<p>Gagal memuat tugas.</p>";
+        console.error(error); return;
+      }
+      if (!data.length) {
+        taskList.innerHTML = "<p>Tidak ada tugas yang aktif.</p>";
+        return;
+      }
+
+      data.forEach(t => {
+        const card = document.createElement("div");
+        card.className = "task-card";
+        card.innerHTML = `
+          <div class="task-title">${t.judul}</div>
+          <div class="task-date">${formatTanggal(t.tanggal_awal)} - ${formatTanggal(t.tanggal_akhir)}</div>
+          <div class="task-btns">
+            <button class="btn-edit">✏️ Edit</button>
+            <button class="btn-delete">🗑️ Hapus</button>
+          </div>
+        `;
+        card.querySelector(".btn-edit").addEventListener("click", () =>
+          editTask(t.id, t.judul, t.tanggal_awal, t.tanggal_akhir)
         );
+        card.querySelector(".btn-delete").addEventListener("click", () =>
+          deleteTask(t.id)
+        );
+        taskList.appendChild(card);
+      });
+    }
 
-        let userId = sessionStorage.getItem("currentUser");
+    async function deleteTask(id) {
+      if (!confirm("Hapus tugas ini?")) return;
+      await supabase.from("tugas").delete().eq("id", id).eq("user_id", userId);
+      loadTasks();
+    }
 
-        if (!userId) {
-            alert("Silakan login dulu!");
-            window.location.href = "index.html";
-        }
+    function editTask(id, judul, awal, akhir) {
+      editId = id;
+      document.getElementById("judul").value = judul;
+      document.getElementById("tanggal_awal").value = awal;
+      document.getElementById("tanggal_akhir").value = akhir;
+      form.scrollIntoView({behavior:'smooth'});
+    }
 
-        const taskList = document.getElementById("task-list");
-        const form = document.getElementById("task-form");
-        let editId = null;
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const judul = document.getElementById("judul").value.trim();
+      const tanggal_awal = document.getElementById("tanggal_awal").value;
+      const tanggal_akhir = document.getElementById("tanggal_akhir").value;
 
-        async function loadProfile() {
-            const { data } = await supabase.from("accounts").select("id,fullname,email,photo").eq("id", userId).maybeSingle();
-            if (data) {
-                document.getElementById("nama-user").textContent = data.fullname || "Tanpa Nama";
-                document.getElementById("email-user").textContent = data.email || "Tidak ada email";
-                if (data.photo) {
-                    document.getElementById("avatar-user").src = data.photo;
-                    document.getElementById("ikon-user").src = data.photo;
-                }
-            }
-        }
+      if (editId) {
+        await supabase.from("tugas")
+          .update({ judul, tanggal_awal, tanggal_akhir })
+          .eq("id", editId).eq("user_id", userId);
+        editId = null;
+      } else {
+        await supabase.from("tugas")
+          .insert({ judul, tanggal_awal, tanggal_akhir, user_id:userId, is_done:false });
+      }
+      form.reset();
+      loadTasks();
+    });
 
-        function formatTanggal(tanggal) {
-            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-            const date = new Date(tanggal);
-            return date.toLocaleDateString('id-ID', options);
-        }
+    document.getElementById("btn-logout").addEventListener("click", () => {
+      sessionStorage.clear();
+      alert("Anda telah logout.");
+      window.location.href = "index.html";
+    });
 
-        async function loadTasks() {
-            const { data, error } = await supabase.from("tugas")
-                .select("*")
-                .eq("user_id", userId)
-                .eq("is_done", false)
-                .order("tanggal_awal", { ascending: true });
-
-            taskList.innerHTML = "";
-            if (error) {
-                taskList.innerHTML = "<p>Gagal memuat tugas.</p>";
-                console.error(error);
-                return;
-            }
-            if (!data.length) {
-                taskList.innerHTML = "<p>Tidak ada tugas yang aktif.</p>";
-                return;
-            }
-
-            data.forEach(t => {
-                const card = document.createElement("div");
-                card.className = "task-card";
-                card.innerHTML = `
-                    <div class="task-title">${t.judul}</div>
-                    <div class="task-date">${formatTanggal(t.tanggal_awal)} - ${formatTanggal(t.tanggal_akhir)}</div>
-                    <div class="task-btns">
-                        <button class="btn-edit">✏️Edit</span></button>
-                        <button class="btn-delete">🗑️Hapus</span></button>
-                    </div>
-                `;
-                card.querySelector(".btn-edit").addEventListener("click", () => editTask(t.id, t.judul, t.tanggal_awal, t.tanggal_akhir));
-                card.querySelector(".btn-delete").addEventListener("click", () => deleteTask(t.id));
-                taskList.appendChild(card);
-            });
-        }
-
-        window.deleteTask = async (id) => {
-            if (!confirm("Hapus tugas ini?")) return;
-            await supabase.from("tugas").delete().eq("id", id).eq("user_id", userId);
-            loadTasks();
-        }
-
-        window.editTask = (id, judul, awal, akhir) => {
-            editId = id;
-            document.getElementById("judul").value = judul;
-            document.getElementById("tanggal_awal").value = awal;
-            document.getElementById("tanggal_akhir").value = akhir;
-            form.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        form.addEventListener("submit", async e => {
-            e.preventDefault();
-            const judul = document.getElementById("judul").value.trim();
-            const tanggal_awal = document.getElementById("tanggal_awal").value;
-            const tanggal_akhir = document.getElementById("tanggal_akhir").value;
-            if (editId) {
-                await supabase.from("tugas").update({ judul, tanggal_awal, tanggal_akhir }).eq("id", editId).eq("user_id", userId);
-                editId = null;
-            } else {
-                await supabase.from("tugas").insert({ judul, tanggal_awal, tanggal_akhir, user_id: userId, is_done: false });
-            }
-            form.reset();
-            loadTasks();
-        });
-
-        document.getElementById("btn-logout").addEventListener("click", () => {
-            sessionStorage.clear();
-            alert("Anda telah logout.");
-            window.location.href = "index.html";
-        });
-
-        loadProfile();
-        loadTasks();
-    </script>
+    loadProfile();
+    loadTasks();
+  </script>
 </body>
 </html>
