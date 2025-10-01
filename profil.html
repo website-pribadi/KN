@@ -22,10 +22,7 @@
         .logo{display:flex;gap:12px;align-items:center}
         .logo img{width:44px;height:44px;border-radius:10px;object-fit:cover}
         .logo .title{font-weight:700;font-size:1.05rem}
-        .profile-card{background:var(--glass);padding:14px;border-radius:12px;display:flex;gap:12px;align-items:center}
-        .avatar{width:56px;height:56px;border-radius:12px;border:2px solid rgba(255,255,255,0.06);overflow:hidden}
-        .avatar img{width:100%;height:100%;object-fit:cover}
-        .p-info{flex:1}
+        .profile-card{background:var(--glass);padding:14px;border-radius:12px;display:flex;flex-direction:column;gap:4px}
         .p-info h3{margin:0;font-size:0.95rem}
         .p-info small{color:var(--muted)}
         .nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
@@ -34,7 +31,7 @@
         .nav a.active{background:linear-gradient(90deg, rgba(0,212,255,0.1), rgba(139,92,246,0.08));color:var(--accent)}
 
         .content{flex:1;padding:28px;display:flex;flex-direction:column;gap:22px}
-        .top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+        .top{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:15px}
         .grid{display:grid;grid-template-columns:1fr;gap:18px;max-width:600px}
 
         /* Styling Form Profil */
@@ -43,15 +40,13 @@
         .form-group{margin-bottom:15px}
         .form-group label{display:block;margin-bottom:8px;color:var(--muted);font-size:0.9rem}
         
-        /* Gaya input untuk mode View Only (Disabled) */
         .form-group input:disabled, .form-group select:disabled, .form-group textarea:disabled {
-            background: #222533; /* Warna gelap agar terlihat non-editable */
+            background: #222533; 
             color: var(--muted);
             cursor: not-allowed;
             border: 1px solid rgba(255,255,255,0.04);
         }
 
-        /* Gaya input untuk mode Edit */
         .form-group input:not(:disabled), .form-group select:not(:disabled), .form-group textarea:not(:disabled),
         .form-group input[type="text"], .form-group input[type="file"], 
         .form-group input[type="date"], .form-group input[type="tel"],
@@ -64,10 +59,7 @@
         .btn{padding:10px 16px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041021;font-weight:700;transition:opacity 0.3s}
         .btn:hover{opacity:0.9}
 
-        /* Styling Foto Profil */
-        .profile-photo-area{
-            display:flex;flex-direction:column;align-items:center;margin-bottom:20px;
-        }
+        .profile-photo-area{display:flex;flex-direction:column;align-items:center;margin-bottom:20px;}
         #profile-photo-display{
             width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:15px;
             border:4px solid var(--accent);box-shadow:0 0 15px rgba(0,212,255,0.4);
@@ -75,15 +67,10 @@
         #file-upload-label{
             cursor:pointer;padding:8px 15px;border-radius:8px;background:var(--glass);
             color:var(--accent);border:1px solid var(--accent);font-size:0.9rem;
-            /* Sembunyikan secara default */
             display: none; 
         }
         #file-input{display:none;}
-        
-        /* Tambahkan class untuk mode edit pada file label */
-        #profile-form.edit-mode #file-upload-label {
-            display: block;
-        }
+        #profile-form.edit-mode #file-upload-label { display: block; }
 
         @media (max-width:640px){.wrap{flex-direction:column}.sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:12px}.content{padding:14px}}
     </style>
@@ -99,16 +86,14 @@
                 </div>
             </div>
             <div class="profile-card">
-                <div class="avatar"><img id="avatar-user" src="profil2.png" alt="avatar"></div>
                 <div class="p-info">
                     <h3 id="nama-user">--</h3>
                     <small id="email-user">--</small>
                 </div>
-                <button id="btn-logout" class="btn" style="padding:6px 8px">Keluar</button>
             </div>
             <nav class="nav">
                 <a href="beranda.html">Beranda <small>›</small></a>
-                <a href="profil.html">Profil <small>›</small></a>
+                <a href="profil.html" class="active">Profil <small>›</small></a>
                 <a href="tugas.html">Tugas <small>›</small></a>
                 <a href="chat.html">Pesan <small>›</small></a>
                 <a href="kuis.html">Menejemen Kuis<small>›</small></a>
@@ -121,6 +106,7 @@
         <main class="content">
             <div class="top">
                 <div style="font-size:1.25rem;font-weight:700">Profil Saya</div>
+                <button id="btn-logout" class="btn" style="padding:6px 12px;">Keluar</button>
             </div>
             <div class="grid">
                 <section class="card">
@@ -130,7 +116,6 @@
                     </div>
                     
                     <form id="profile-form">
-                        
                         <div class="profile-photo-area">
                             <img id="profile-photo-display" src="profil2.png" alt="Foto Profil">
                             <input type="file" id="file-input" accept="image/*">
@@ -149,7 +134,6 @@
                             <label for="phone">Nomor Telepon</label>
                             <input type="tel" id="phone" disabled placeholder="Contoh: 081234567890">
                         </div>
-                        
                         <div class="form-group">
                             <label for="birth">Tanggal Lahir</label>
                             <input type="date" id="birth" disabled>
@@ -167,7 +151,6 @@
                             <label for="address">Alamat Lengkap</label>
                             <textarea id="address" rows="3" disabled placeholder="Masukkan alamat lengkap Anda"></textarea>
                         </div>
-                        
                         <button type="submit" class="btn" id="btn-update" style="display:none;">Simpan Perubahan</button>
                     </form>
                     <p id="status-message" style="margin-top:15px; color:var(--accent); font-weight:600;"></p>
@@ -177,7 +160,6 @@
     </div>
 
 <script>
-    // Konfigurasi Supabase
     const userId = sessionStorage.getItem("currentUser");
     if (!userId) {
       alert("Silakan login terlebih dahulu.");
@@ -189,10 +171,8 @@
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhuc3Z4Ym9odmpqZmlrbWRqZnBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0Nzk0NDMsImV4cCI6MjA2ODA1NTQ0M30.KzOeS0md4A6jeexgXxSdfuXuBbG5L1WtFginkztaPFw"
     );
 
-    // Elemen DOM
     const elNamaUser = document.getElementById("nama-user");
     const elEmailUser = document.getElementById("email-user");
-    const elAvatarUser = document.getElementById("avatar-user");
     const elIkonUser = document.getElementById("ikon-user");
     const elFullname = document.getElementById("fullname");
     const elEmailInput = document.getElementById("email");
@@ -209,20 +189,15 @@
     const elBtnToggleEdit = document.getElementById("btn-toggle-edit");
 
     let currentPhotoUrl = 'profil2.png';
-    let isEditMode = false; // Status mode edit saat ini
+    let isEditMode = false;
 
-    // Daftar semua input yang bisa diedit (kecuali email)
     const editableInputs = [elFullname, elPhone, elBirth, elGender, elAddress];
 
-    // ==========================================================
-    // FUNGSI UNTUK MENGAKTIFKAN/MENONAKTIFKAN MODE EDIT
-    // ==========================================================
     function toggleEditMode(enable) {
         isEditMode = enable;
-        elProfileForm.classList.toggle('edit-mode', enable); // Untuk styling dan file label
+        elProfileForm.classList.toggle('edit-mode', enable);
 
         editableInputs.forEach(input => {
-            // Semua input yang bisa diedit diaktifkan, kecuali email yang selalu disabled
             if (input.id !== 'email') { 
                 input.disabled = !enable;
             }
@@ -231,18 +206,13 @@
         elBtnUpdate.style.display = enable ? 'block' : 'none';
         elBtnToggleEdit.textContent = enable ? 'Batalkan Edit' : 'Edit Profil';
         elBtnToggleEdit.style.background = enable ? 'red' : 'var(--accent-2)';
-        elStatusMessage.textContent = ''; // Hapus pesan status saat mode berubah
+        elStatusMessage.textContent = '';
         
         if (!enable) {
-            // Jika membatalkan edit, muat ulang profil untuk mengembalikan nilai asli
             loadProfile(); 
         }
     }
 
-
-    // ==========================================================
-    // FUNGSI UTAMA: MEMUAT DATA PROFIL BERDASARKAN ID PENGGUNA
-    // ==========================================================
     async function loadProfile() {
       const { data, error } = await supabase
         .from("accounts")
@@ -257,11 +227,9 @@
       }
       
       if (data) {
-        // Update Sidebar dan Profile Card
         elNamaUser.textContent = data.fullname || "Tanpa Nama";
         elEmailUser.textContent = data.email || "Tidak ada email";
         
-        // Isi Input Form
         elFullname.value = data.fullname || "";
         elEmailInput.value = data.email || "";
         elPhone.value = data.phone || "";
@@ -269,10 +237,8 @@
         elGender.value = data.gender || "";
         elAddress.value = data.address || "";
 
-        // Foto Profil
         if (data.photo) {
           currentPhotoUrl = data.photo;
-          elAvatarUser.src = data.photo;
           elIkonUser.src = data.photo;
           elProfilePhotoDisplay.src = data.photo;
         } else {
@@ -281,9 +247,6 @@
       }
     }
 
-    // ==========================================================
-    // FUNGSI: UPLOAD FOTO KE SUPABASE STORAGE
-    // ==========================================================
     async function uploadPhoto(file) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${userId}-${Date.now()}.${fileExt}`; 
@@ -308,14 +271,10 @@
         return publicUrlData.publicUrl;
     }
     
-    // ==========================================================
-    // FUNGSI: MEMPERBARUI DATA PROFIL DI DATABASE
-    // ==========================================================
     async function updateProfile(e) {
         e.preventDefault();
         elStatusMessage.textContent = "Sedang menyimpan...";
         
-        // Ambil nilai dari semua input
         const newFullname = elFullname.value.trim();
         const newPhone = elPhone.value.trim();
         const newBirth = elBirth.value;
@@ -337,20 +296,10 @@
             elStatusMessage.textContent = "Mengunggah foto dan menyimpan...";
             newPhotoUrl = await uploadPhoto(file);
             if (!newPhotoUrl) {
-                elStatusMessage.textContent = "Gagal mengunggah foto. Perubahan nama dan data lain mungkin tidak tersimpan.";
+                elStatusMessage.textContent = "Gagal mengunggah foto.";
                 return;
             }
             updateData.photo = newPhotoUrl;
-
-            // Optional: Hapus foto lama dari storage
-            if (currentPhotoUrl && currentPhotoUrl !== 'profil2.png') {
-                const oldFilePathMatch = currentPhotoUrl.match(/\/avatars\/(.*)/);
-                const oldFilePath = oldFilePathMatch ? oldFilePathMatch[1] : null;
-                
-                if(oldFilePath) {
-                    await supabase.storage.from('avatars').remove([oldFilePath]);
-                }
-            }
         }
 
         const { error } = await supabase
@@ -367,23 +316,15 @@
             elStatusMessage.textContent = "Profil berhasil diperbarui! ✅";
             currentPhotoUrl = newPhotoUrl;
             
-            // Setelah berhasil, nonaktifkan mode edit
             toggleEditMode(false); 
-            // loadProfile() sudah dipanggil di toggleEditMode(false)
             setTimeout(() => {elStatusMessage.textContent = '';}, 3000); 
         }
     }
 
-    // ==========================================================
-    // EVENT LISTENERS
-    // ==========================================================
-
-    // Tombol Edit/Batal
     elBtnToggleEdit.addEventListener('click', () => {
         toggleEditMode(!isEditMode);
     });
 
-    // Preview foto yang baru dipilih
     elFileInput.addEventListener('change', function() {
         if (this.files && this.files[0]) {
             const reader = new FileReader();
@@ -394,20 +335,15 @@
         }
     });
 
-    // Logout Button
     document.getElementById('btn-logout').addEventListener('click', ()=>{
       sessionStorage.clear();
       alert('Anda telah logout.');
       window.location.href = 'index.html';
     });
 
-    // Form Submit (hanya dipanggil saat btn-update terlihat)
     elProfileForm.addEventListener('submit', updateProfile);
 
-    // Panggil fungsi saat halaman dimuat
     loadProfile();
-    // Inisialisasi mode: Pastikan default adalah non-editable (toggleEditMode(false) sudah dilakukan secara implisit oleh disabled di HTML dan logic loadProfile)
-    // Tidak perlu memanggil toggleEditMode(false) di sini karena elemen input sudah di-set 'disabled' di HTML awal.
 </script>
 </body>
 </html>
