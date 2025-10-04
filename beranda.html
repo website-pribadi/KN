@@ -1,237 +1,253 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Beranda</title>
-    <link rel="icon" href="ikon2.png" type="image/png">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Beranda</title>
+  <link rel="icon" href="ikon2.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <style>
-    :root{
-        --bg:#0b1020; --card:#111421; --accent:#00d4ff; --accent-2:#8b5cf6;
-        --muted:#9aa3b2; --glass: rgba(255,255,255,0.08);
-        --radius:18px;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    *{box-sizing:border-box}
+  :root{
+    --bg:#0b1020; --card:#111421; --accent:#00d4ff; --accent-2:#8b5cf6;
+    --muted:#9aa3b2; --glass: rgba(255,255,255,0.08);
+    --radius:18px;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  *{box-sizing:border-box}
 
-    html,body{
-        height:100%;
-        margin:0;
-        overflow:hidden;
-        background:linear-gradient(180deg,var(--bg),#071022);
-        color:#e8eef6;
-    }
+  html,body{
+    height:100%;
+    margin:0;
+    overflow:auto;
+    background:linear-gradient(180deg,var(--bg),#071022);
+    color:#e8eef6;
+  }
 
-    .wrap{display:flex;height:100%}
+  .wrap{display:flex;min-height:100%}
 
-    .sidebar{
-        width:260px;
-        padding:28px;
-        background:linear-gradient(180deg,var(--card), rgba(17,20,33,0.6));
-        backdrop-filter:blur(10px);
-        border-right:1px solid rgba(255,255,255,0.03);
-        display:flex;
-        flex-direction:column;
-        gap:18px;
-    }
+  /* Sidebar */
+  .sidebar{
+    width:260px;
+    padding:28px;
+    background:linear-gradient(180deg,var(--card), rgba(17,20,33,0.6));
+    backdrop-filter:blur(10px);
+    border-right:1px solid rgba(255,255,255,0.03);
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+  .logo{display:flex;gap:12px;align-items:center}
+  .logo img{width:44px;height:44px;border-radius:10px;object-fit:cover}
+  .logo .title{font-weight:700;font-size:1.05rem}
+  .profile-card{background:var(--glass);padding:14px;border-radius:12px;display:flex;flex-direction:column;gap:4px;border:1px solid rgba(255,255,255,0.1)}
+  .p-info h3{margin:0;font-size:0.95rem}
+  .p-info small{color:var(--muted)}
+  .nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+  .nav a{padding:10px;border-radius:10px;text-decoration:none;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+  .nav a:hover{background:linear-gradient(90deg, rgba(0,212,255,0.1), rgba(139,92,246,0.08));color:var(--accent)}
 
-    .logo{display:flex;gap:12px;align-items:center}
-    .logo img{width:44px;height:44px;border-radius:10px;object-fit:cover}
-    .logo .title{font-weight:700;font-size:1.05rem}
+  /* Konten */
+  .content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    padding:32px;
+    gap:28px;
+    padding-bottom:90px;
+  }
+  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:15px}
+  .top h1{margin:0;font-size:1.8rem;font-weight:800;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
-    .profile-card{
-        background:var(--glass);
-        padding:14px;
-        border-radius:12px;
-        display:flex;
-        flex-direction:column;
-        gap:4px;
-        border: 1px solid rgba(255,255,255,0.1)
-    }
-    .p-info h3{margin:0;font-size:0.95rem}
-    .p-info small{color:var(--muted)}
+  .grid{flex:1;display:grid;grid-template-columns: 2fr 1fr;grid-template-rows:auto 1fr;gap:20px}
+  .card{background:rgba(255,255,255,0.05);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);box-shadow:0 8px 32px rgba(11,16,32,0.6);padding:24px;border-radius:var(--radius);min-height:180px;display:flex;flex-direction:column}
+  #card-tugas { grid-column:1/2;grid-row:1/3 }
+  #card-motivasi { grid-column:2/3 }
+  #card-pesan { grid-column:2/3 }
+  .card h4{margin:0 0 15px;color:var(--accent-2);font-size:1.1rem;border-bottom:2px solid rgba(139,92,246,0.2);padding-bottom:8px}
 
-    .nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
-    .nav a{
-        padding:10px;
-        border-radius:10px;
-        text-decoration:none;
-        color:var(--muted);
-        display:flex;
-        justify-content:space-between;
-        align-items:center
-    }
-    .nav a:hover{
-        background:linear-gradient(90deg, rgba(0,212,255,0.1), rgba(139,92,246,0.08));
-        color:var(--accent)
-    }
+  /* Daftar tugas */
+  #list-tugas {
+    flex:1;
+    overflow-y:auto;
+    max-height:400px;
+    padding-right:4px;
+  }
+  #list-tugas::-webkit-scrollbar {
+    width:6px;
+  }
+  #list-tugas::-webkit-scrollbar-thumb {
+    background:rgba(255,255,255,0.2);
+    border-radius:10px;
+  }
+  .task {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 0;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .task:last-child { border-bottom:none; }
+  .task .title{font-weight:600;}
+  .task small{color:var(--muted); font-size:0.85rem;}
 
-    .content{
-        flex:1;
-        display:flex;
-        flex-direction:column;
-        padding:32px;
-        gap:28px;
-        height:100%;
-        overflow:hidden;
-    }
+  /* Pesan Terbaru */
+  #list-pesan {
+    flex:1;
+    overflow-y:auto;
+    max-height:200px;
+    padding-right:4px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  #list-pesan::-webkit-scrollbar {
+    width:6px;
+  }
+  #list-pesan::-webkit-scrollbar-thumb {
+    background:rgba(255,255,255,0.2);
+    border-radius:10px;
+  }
+  .message-item {
+    background: rgba(255,255,255,0.04);
+    border-left: 3px solid var(--accent-2);
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+  .message-item strong {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fff;
+  }
+  .message-item .text {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 3px;
+  }
+  .open-chat-btn {
+    display: block;
+    text-align: center;
+    padding: 8px 0;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    margin-top: 10px;
+    text-decoration: none;
+    color: var(--accent);
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .open-chat-btn:hover {
+    background: rgba(255,255,255,0.1);
+  }
 
-    .top{
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        gap:12px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-        padding-bottom: 15px;
-    }
-    .top h1 {
-        margin:0;
-        font-size:1.8rem;
-        font-weight:800;
-        background: linear-gradient(90deg, var(--accent), var(--accent-2));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+  /* Tombol */
+  .btn {
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:6px 12px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    color:#041021;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .btn:active { transform:scale(0.96); }
+  .btn-small { padding:4px 10px;font-size:0.8rem; }
 
-    .grid{
-        flex:1;
-        display:grid;
-        grid-template-columns: 2fr 1fr;
-        grid-template-rows: auto 1fr;
-        gap: 20px;
-        overflow:hidden;
-    }
-
-    .card{
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        box-shadow: 0 8px 32px 0 rgba(11, 16, 32, 0.6);
-        padding: 24px;
-        border-radius: var(--radius);
-        min-height: 180px;
-        display:flex;
-        flex-direction:column;
-        overflow:hidden;
-    }
-
-    #card-tugas { grid-column: 1 / 2; grid-row: 1 / 3; }
-    #card-motivasi { grid-column: 2 / 3; }
-    #card-pesan { grid-column: 2 / 3; }
-
-    .card h4{
-        margin:0 0 15px 0;
-        color:var(--accent-2);
-        font-size:1.1rem;
-        border-bottom: 2px solid rgba(139,92,246,0.2);
-        padding-bottom: 8px;
-    }
-
-    .task{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.08);}
-    .task:last-child {border-bottom: none;}
-    .task .title{font-weight:600;}
-    .task small{color:var(--muted); font-size:0.85rem;}
-
-    .btn{
-        padding:8px 12px;
-        border-radius:10px;
-        border:none;
-        cursor:pointer;
-        background:linear-gradient(90deg,var(--accent),var(--accent-2));
-        color:#041021;
-        font-weight:700
-    }
-
-    #quote { font-style: italic; font-size: 1.15rem; color: var(--accent); line-height: 1.6; }
-
-    .message-item { margin-bottom: 12px; padding-left: 10px; border-left: 3px solid var(--accent); }
-    .message-item strong { display: block; font-size: 0.95rem; }
-    .message-item .text { color: var(--muted); font-size: 0.85rem; }
-
-    #list-pesan {
-        flex:1;
-        overflow-y:auto;
-        padding-right: 6px;
-    }
-    #list-pesan::-webkit-scrollbar { width: 6px; }
-    #list-pesan::-webkit-scrollbar-thumb { background: var(--accent-2); border-radius: 4px; }
-    #list-pesan::-webkit-scrollbar-track { background: transparent; }
-
-    #list-tugas {
-        flex:1;
-        overflow-y:auto;
-        padding-right: 6px;
-    }
-    #list-tugas::-webkit-scrollbar { width: 6px; }
-    #list-tugas::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-    #list-tugas::-webkit-scrollbar-track { background: transparent; }
-
-    @media (max-width:920px){
-        .grid{ grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-        #card-tugas, #card-motivasi, #card-pesan { grid-column: 1 / 2; grid-row: auto; }
-    }
-    @media (max-width:640px){
-        .wrap{flex-direction:column}
-        .sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:12px}
-        .content{padding:14px}
-    }
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed;
+    bottom:0;left:0;right:0;
+    height:62px;
+    background:rgba(17,20,33,0.9);
+    border-top:1px solid rgba(255,255,255,0.05);
+    display:none;
+    justify-content:space-around;
+    align-items:center;
+    z-index:1000;
+    backdrop-filter:blur(10px);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .bottom-nav a{flex:1;text-align:center;text-decoration:none;color:#e8eef6;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;border-radius:10px}
+  .bottom-nav a .ico{font-size:18px}
+  .bottom-nav a.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041021;font-weight:700}
+  
+  /* Responsive */
+  @media(max-width:920px){
+    .grid{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+    #card-tugas,#card-motivasi,#card-pesan{grid-column:1/2;grid-row:auto}
+  }
+  @media(max-width:640px){
+    .wrap{flex-direction:column}
+    .sidebar{display:none}
+    .content{padding:16px;padding-bottom:90px}
+    .bottom-nav{display:flex}
+  }
 </style>
 </head>
 <body>
-    <div class="wrap">
-        <aside class="sidebar">
-            <div class="logo">
-                <img id="ikon-user" src="profil2.png" alt="ikon">
-                <div>
-                    <div class="title">MyDashboard</div>
-                    <small style="color:var(--muted)">Selamat datang</small>
-                </div>
-            </div>
-            <div class="profile-card">
-                <div class="p-info">
-                    <h3 id="nama-user">--</h3>
-                    <small id="email-user">--</small>
-                </div>
-            </div>
-            <nav class="nav">
-                <a href="beranda.html" class="active">Beranda <small>›</small></a>
-                <a href="profil.html">Profil <small>›</small></a>
-                <a href="tugas.html">Tugas <small>›</small></a>
-                <a href="chat.html">Pesan <small>›</small></a>
-                <a href="kuis.html">Menejemen Kuis<small>›</small></a>
-            </nav>
-            <div style="margin-top:auto;color:var(--muted);font-size:0.85rem">
-                Versi alpha • &copy; 2025
-            </div>
-        </aside>
+  <div class="wrap">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <img id="ikon-user" src="profil2.png" alt="ikon">
+        <div>
+          <div class="title">MyDashboard</div>
+          <small style="color:var(--muted)">Selamat datang</small>
+        </div>
+      </div>
+      <div class="profile-card">
+        <div class="p-info">
+          <h3 id="nama-user">--</h3>
+          <small id="email-user">--</small>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="beranda.html" class="active">Beranda <small>›</small></a>
+        <a href="profil.html">Profil <small>›</small></a>
+        <a href="tugas.html">Tugas <small>›</small></a>
+        <a href="chat.html">Pesan <small>›</small></a>
+        <a href="kuis.html">Manajemen Kuis <small>›</small></a>
+      </nav>
+    </aside>
 
-        <main class="content">
-            <div class="top">
-                <h1>Selamat Datang, <span id="welcome-name">...</span>!</h1>
-                <div style="margin-left:auto; display:flex; align-items:center; gap:15px;">
-                    <div style="color:var(--muted)">Hari ini: <span id="hari-nama">-</span>, <span id="tanggal">-</span></div>
-                    <button id="btn-logout" class="btn" style="padding:6px 12px;">Keluar</button>
-                </div>
-            </div>
-            <div class="grid">
-                <section class="card" id="card-tugas">
-                    <h4>Daftar Tugas</h4>
-                    <div id="list-tugas">Memuat...</div>
-                </section>
+    <!-- Konten -->
+    <main class="content">
+      <div class="top">
+        <h1>Selamat Datang, <span id="welcome-name">...</span>!</h1>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:15px;">
+          <div style="color:var(--muted)">Hari ini: <span id="hari-nama">-</span>, <span id="tanggal">-</span></div>
+          <button id="btn-logout" class="btn" style="padding:6px 12px;">Keluar</button>
+        </div>
+      </div>
+      <div class="grid">
+        <section class="card" id="card-tugas">
+          <h4>Daftar Tugas</h4>
+          <div id="list-tugas">Memuat...</div>
+        </section>
+        <section class="card" id="card-motivasi">
+          <h4>Motivasi Hari Ini</h4>
+          <div id="quote">Memuat motivasi...</div>
+        </section>
+        <section class="card" id="card-pesan">
+          <h4>Pesan Terbaru</h4>
+          <div id="list-pesan">Memuat pesan...</div>
+        </section>
+      </div>
+    </main>
+  </div>
 
-                <section class="card" id="card-motivasi">
-                    <h4>Motivasi Hari Ini</h4>
-                    <div id="quote">Memuat motivasi...</div>
-                </section>
-                
-                <section class="card" id="card-pesan">
-                    <h4>Pesan Terbaru</h4>
-                    <div id="list-pesan">Memuat pesan...</div>
-                </section>
-            </div>
-        </main>
-    </div>
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <a href="beranda.html" id="nav-home"><span class="ico">🏠</span><span>Beranda</span></a>
+    <a href="profil.html" id="nav-profil"><span class="ico">👤</span><span>Profil</span></a>
+    <a href="tugas.html" id="nav-tugas"><span class="ico">📝</span><span>Tugas</span></a>
+    <a href="chat.html" id="nav-chat"><span class="ico">💬</span><span>Chat</span></a>
+    <a href="kuis.html" id="nav-kuis"><span class="ico">❓</span><span>Kuis</span></a>
+  </nav>
 
 <script>
 const userId = sessionStorage.getItem("currentUser");
@@ -252,15 +268,13 @@ async function loadProfile() {
     .eq("id", userId)
     .maybeSingle();
 
-  if (error) { console.error(error); return; }
+  if (error) return console.error(error);
   if (data) {
     const firstName = data.fullname ? data.fullname.split(' ')[0] : 'Pengguna';
     document.getElementById("welcome-name").textContent = firstName;
     document.getElementById("nama-user").textContent = data.fullname || "--";
     document.getElementById("email-user").textContent = data.email || "--";
-    if (data.photo) {
-      document.getElementById("ikon-user").src = data.photo;
-    }
+    if (data.photo) document.getElementById("ikon-user").src = data.photo;
   }
 }
 
@@ -354,16 +368,15 @@ async function loadPesanRealtime() {
       el.innerHTML = "<p style='color:var(--muted);'>Belum ada pesan terbaru.</p>";
       return;
     }
-    el.innerHTML = pesanList.map(p => `
+    const latest = pesanList.slice(0, 20);
+    el.innerHTML = latest.map(p => `
       <div class="message-item">
         <strong>${p.sender_name || "Anonim"}</strong>
         <div class="text">${p.text.length > 50 ? p.text.substring(0,50)+'...' : p.text}</div>
       </div>
     `).join('') + `
-      <a href="chat.html" class="btn" style="display:block; text-align:center; margin-top:15px; background:var(--glass); color:var(--accent);">Buka Chat</a>
+      <a href="chat.html" class="open-chat-btn">Buka Chat</a>
     `;
-
-    el.scrollTop = el.scrollHeight;
   }
 
   async function fetchLatestPesan() {

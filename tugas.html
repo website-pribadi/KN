@@ -16,14 +16,15 @@
     }
     * { box-sizing:border-box; }
 
-    html,body {
-      height:100%; margin:0;
-      background:linear-gradient(180deg,var(--bg),#071022);
+    html, body {
+      height:100%;
+      margin:0;
+      background: linear-gradient(180deg,var(--bg),#071022);
       color:#e8eef6;
-      overflow:hidden;
+      overflow-x:hidden;
     }
 
-    .wrap { display:flex; height:100%; }
+    .wrap { display:flex; min-height:100%; }
 
     /* Sidebar */
     .sidebar {
@@ -50,16 +51,13 @@
       text-decoration:none; color:var(--muted);
       display:flex; justify-content:space-between; align-items:center;
     }
-    .nav a:hover {
-      background:linear-gradient(90deg,rgba(0,212,255,0.06),rgba(139,92,246,0.04));
-      color:var(--accent);
-    }
+    .nav a:hover { background:linear-gradient(90deg,rgba(0,212,255,0.06),rgba(139,92,246,0.04)); color:var(--accent); }
+    .nav a.active { color:var(--accent); font-weight:700; }
 
     /* Content */
     .content {
       flex:1; display:flex; flex-direction:column;
       padding:28px; gap:22px;
-      height:100%; overflow:hidden;
     }
     .top {
       display:flex; justify-content:space-between; align-items:center; gap:12px;
@@ -96,12 +94,18 @@
 
     /* Task list */
     .task-list {
-      flex:1;
       display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
-      gap:18px; overflow-y:auto; padding-right:6px;
+      gap:18px;
+      max-height:40vh;         /* Batas tinggi agar bisa scroll */
+      overflow-y:auto;
+      padding-right:6px;
     }
     .task-list::-webkit-scrollbar { width:6px; }
-    .task-list::-webkit-scrollbar-thumb { background:var(--accent); border-radius:4px; }
+    .task-list::-webkit-scrollbar-thumb {
+      background:rgba(255,255,255,0.2);
+      border-radius:10px;
+    }
+
     .task-card {
       background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
       padding:18px; border-radius:var(--radius);
@@ -119,15 +123,29 @@
       display:flex; align-items:center; justify-content:center; gap:6px;
     }
     .task-btns button:hover { opacity:0.85; }
-    .task-btns .btn-delete {
-      background:linear-gradient(90deg,#ff5f6d,#ffc371);
-    }
+    .task-btns .btn-delete { background:linear-gradient(90deg,#ff5f6d,#ffc371); }
 
+    /* Bottom Navigation (HP) */
+    .bottom-nav { display:none; }
     @media (max-width:640px) {
-      .wrap { flex-direction:column; }
-      .sidebar { width:100%; flex-direction:row; overflow-x:auto; padding:12px; }
-      .content { padding:14px; }
-      .task-list { grid-template-columns:1fr; }
+      .wrap { flex-direction:column; height:auto; }
+      .sidebar { display:none; }
+      .content { padding:14px; height:auto; }
+      .task-list { grid-template-columns:1fr; max-height:65vh; }
+
+      .bottom-nav {
+        display:flex;
+        position:fixed; bottom:0; left:0; right:0;
+        background:var(--card);
+        border-top:1px solid rgba(255,255,255,0.1);
+        height:60px;
+        justify-content:space-around; align-items:center;
+      }
+      .bottom-nav a {
+        color:var(--muted); text-decoration:none;
+        font-size:0.85rem; display:flex; flex-direction:column; align-items:center;
+      }
+      .bottom-nav a.active { color:var(--accent); font-weight:700; }
     }
   </style>
 </head>
@@ -153,11 +171,8 @@
         <a href="profil.html">Profil <small>›</small></a>
         <a href="tugas.html" class="active">Tugas <small>›</small></a>
         <a href="chat.html">Pesan <small>›</small></a>
-        <a href="kuis.html">Menejemen Kuis <small>›</small></a>
+        <a href="kuis.html">Manajemen Kuis <small>›</small></a>
       </nav>
-      <div style="margin-top:auto;color:var(--muted);font-size:0.85rem">
-        Versi alpha • &copy; 2025
-      </div>
     </aside>
 
     <!-- Content -->
@@ -176,6 +191,15 @@
 
       <div class="task-list" id="task-list">Memuat tugas...</div>
     </main>
+  </div>
+
+  <!-- Bottom Navigation (HP) -->
+  <div class="bottom-nav">
+    <a href="beranda.html">🏠<span>Beranda</span></a>
+    <a href="profil.html">👤<span>Profil</span></a>
+    <a href="tugas.html" class="active">📝<span>Tugas</span></a>
+    <a href="chat.html">💬<span>Pesan</span></a>
+    <a href="kuis.html">❓<span>Kuis</span></a>
   </div>
 
   <script>
@@ -200,9 +224,7 @@
       if (data) {
         document.getElementById("nama-user").textContent = data.fullname || "Tanpa Nama";
         document.getElementById("email-user").textContent = data.email || "Tidak ada email";
-        if (data.photo) {
-          document.getElementById("ikon-user").src = data.photo;
-        }
+        if (data.photo) document.getElementById("ikon-user").src = data.photo;
       }
     }
 
