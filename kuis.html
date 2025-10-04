@@ -1,251 +1,344 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Manajemen Kuis</title>
-<link rel="icon" href="ikon2.png" type="image/png">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<style>
-:root{
-  --bg:#0b1020; --card:#111421; --accent:#00d4ff; --accent-2:#8b5cf6;
-  --muted:#9aa3b2; --glass: rgba(255,255,255,0.08);
-  --radius:18px;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-}
-*{box-sizing:border-box}
-html,body{
-  height:100%;margin:0;overflow:hidden;
-  background:linear-gradient(180deg,var(--bg),#071022);color:#e8eef6
-}
-.wrap{display:flex;min-height:100vh}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Kuis</title>
+  <link rel="icon" href="ikon2.png" type="image/png">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <style>
+    :root {
+      --bg:#0b1020; --card:#111421;
+      --accent:#00d4ff; --accent-2:#8b5cf6;
+      --muted:#9aa3b2; --glass: rgba(255,255,255,0.04);
+      --radius:14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+    }
+    * { box-sizing:border-box; }
 
-/* Sidebar */
-.sidebar{
-  width:260px;padding:28px;
-  background:linear-gradient(180deg,var(--card), rgba(17,20,33,0.6));
-  backdrop-filter:blur(10px);
-  border-right:1px solid rgba(255,255,255,0.03);
-  display:flex;flex-direction:column;gap:18px
-}
-.logo{display:flex;gap:12px;align-items:center}
-.logo img{width:44px;height:44px;border-radius:10px;object-fit:cover}
-.logo .title{font-weight:700;font-size:1.05rem}
-.profile-card{
-  background:var(--glass);padding:14px;border-radius:12px;
-  display:flex;flex-direction:column;gap:6px;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-.p-info h3{margin:0;font-size:0.95rem}
-.p-info small{color:var(--muted)}
-.nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
-.nav a{
-  padding:10px;border-radius:10px;text-decoration:none;color:var(--muted);
-  display:flex;justify-content:space-between;align-items:center
-}
-.nav a:hover{
-  background:linear-gradient(90deg, rgba(0,212,255,0.1), rgba(139,92,246,0.08));
-  color:var(--accent)
-}
+    html, body {
+      height:100%;
+      margin:0;
+      background: linear-gradient(180deg,var(--bg),#071022);
+      color:#e8eef6;
+      overflow-x:hidden;
+    }
 
-/* Konten utama */
-.content{
-  flex:1;padding:32px;display:flex;flex-direction:column;gap:20px;height:100vh
-}
-.top{
-  display:flex;justify-content:space-between;align-items:center;gap:12px;
-  border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:15px
-}
-.top h2{
-  margin:0;font-size:1.6rem;font-weight:800;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
+    .wrap { display:flex; min-height:100%; }
 
-/* Tombol umum */
-.btn{
-  padding:10px 16px;
-  border-radius:10px;
-  border:none;
-  cursor:pointer;
-  background:linear-gradient(90deg,var(--accent),var(--accent-2));
-  color:#041021;
-  font-weight:700;
-  transition:opacity 0.3s;
-}
-.btn:hover{opacity:0.9}
+    /* Sidebar */
+    .sidebar {
+      width:260px; padding:28px;
+      background:linear-gradient(180deg,var(--card),rgba(17,20,33,0.6));
+      backdrop-filter:blur(8px);
+      border-right:1px solid rgba(255,255,255,0.05);
+      display:flex; flex-direction:column; gap:18px;
+    }
+    .logo { display:flex; gap:12px; align-items:center; }
+    .logo img { width:44px; height:44px; border-radius:10px; object-fit:cover; }
+    .logo .title { font-weight:700; font-size:1.05rem; }
+    .profile-card {
+      background:var(--glass);
+      padding:14px; border-radius:12px;
+      display:flex; flex-direction:column; gap:4px;
+      border:1px solid rgba(255,255,255,0.08);
+    }
+    .p-info h3 { margin:0; font-size:0.95rem; }
+    .p-info small { color:var(--muted); }
+    .nav { display:flex; flex-direction:column; gap:8px; margin-top:6px; }
+    .nav a {
+      padding:10px; border-radius:10px;
+      text-decoration:none; color:var(--muted);
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .nav a:hover { background:linear-gradient(90deg,rgba(0,212,255,0.06),rgba(139,92,246,0.04)); color:var(--accent); }
+    .nav a.active { color:var(--accent); font-weight:700; }
 
-/* Menu tab tombol */
-.menu-tabs{display:flex;gap:12px;margin-bottom:10px}
-.menu-tabs button{
-  padding:10px 16px;border:none;border-radius:10px;
-  background: linear-gradient(90deg,var(--accent),var(--accent-2));
-  color:#041021;font-weight:700;cursor:pointer;
-}
-.menu-tabs button.active { box-shadow:0 0 8px rgba(0,212,255,0.4); }
-.menu-tabs button:hover {opacity:0.85}
+    /* Content */
+    .content {
+      flex:1; display:flex; flex-direction:column;
+      padding:28px; gap:22px;
+    }
+    .top {
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      padding-bottom:12px;
+    }
+    .top h2 { margin:0; font-size:1.5rem; font-weight:700; }
+    #btn-logout {
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:#041021; font-weight:700;
+      border:none; padding:8px 14px; border-radius:8px;
+      cursor:pointer;
+    }
+    #btn-logout:hover { opacity:0.85; }
 
-/* Form tambah soal */
-form{
-  background:var(--card);padding:18px;border-radius:var(--radius);
-  display:flex;flex-direction:column;gap:12px;max-width:600px;
-  border:1px solid rgba(255,255,255,0.1);
-}
-form input, form textarea, form button{
-  padding:12px;border-radius:10px;
-  border:1px solid rgba(255,255,255,0.1);
-  background:transparent;color:inherit;font-size:1rem
-}
-form button{
-  border:none;background:linear-gradient(90deg,var(--accent),var(--accent-2));
-  color:#041021;font-weight:700;cursor:pointer
-}
-form button:hover{opacity:0.85}
+    /* Tabs */
+    .menu-tabs {
+      display:flex; gap:10px; margin-bottom:8px;
+    }
+    .menu-tabs button {
+      padding:8px 16px; border:none; border-radius:8px;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:#041021; font-weight:600; font-size:0.9rem; cursor:pointer;
+      transition:transform .15s, opacity .2s;
+    }
+    .menu-tabs button:hover { opacity:.85; transform:translateY(-1px); }
+    .menu-tabs button.active { box-shadow:0 0 6px rgba(0,212,255,.4); }
 
-/* Kotak daftar kuis sama dengan card beranda */
-.task-wrapper {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+    /* Form */
+    form {
+      background:var(--card);
+      padding:18px; border-radius:var(--radius);
+      display:flex; flex-direction:column; gap:12px;
+      max-width:600px;
+    }
+    form input, form textarea, form button {
+      padding:12px; border-radius:10px;
+      border:1px solid rgba(255,255,255,0.1);
+      background:transparent; color:inherit; font-size:1rem;
+    }
+    form button {
+      border:none;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:#041021; font-weight:700; cursor:pointer;
+    }
+    form button:hover { opacity:0.9; }
 
-/* Scroll box */
-.scroll-box {
-  max-height: 100vh;
-  overflow-y: auto;
-}
-.scroll-box::-webkit-scrollbar { width: 6px; }
-.scroll-box::-webkit-scrollbar-thumb { background: var(--accent-2); border-radius: 4px; }
-.scroll-box::-webkit-scrollbar-track { background: transparent; }
+    /* Scrollable kuis list */
+    .task-list {
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+      gap:18px;
+      max-height:33vh; overflow-y:auto; padding-right:6px;
+    }
+    .task-list::-webkit-scrollbar { width:6px; }
+    .task-list::-webkit-scrollbar-thumb {
+      background:rgba(255,255,255,0.2); border-radius:10px;
+    }
+    .task-card {
+      background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+      padding:18px; border-radius:var(--radius);
+      display:flex; flex-direction:column;
+      box-shadow:0 6px 30px rgba(11,16,32,0.5);
+    }
+    .task-title { font-weight:600; font-size:1rem; margin-bottom:8px; }
+    .task-date { font-size:0.85rem; color:var(--muted); margin-bottom:12px; }
+    .task-btns { display:flex; gap:8px; margin-top:auto; }
+    .task-btns button {
+      flex:1; padding:8px; border:none; border-radius:8px;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:#041021; font-weight:700; cursor:pointer;
+    }
+    .task-btns .btn-delete { background:linear-gradient(90deg,#ff5f6d,#ffc371); }
+    .task-btns button:hover { opacity:0.85; }
 
-/* Daftar kuis */
-.task-list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 per baris */
-  gap: 16px;
-}
+    /* Scrollable Riwayat */
+    #riwayat-list {
+      max-height:73vh; overflow-y:auto; border:1px solid rgba(255,255,255,0.08);
+      border-radius:10px; padding:0; background:var(--card);
+    }
+    #riwayat-list::-webkit-scrollbar { width:8px; }
+    #riwayat-list::-webkit-scrollbar-thumb { background:var(--accent); border-radius:6px; }
 
-/* Card kuis */
-.task-card {
-  background: var(--card);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-  padding: 20px;
-  border-radius: var(--radius);
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.task-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 28px rgba(0,0,0,0.6);
-}
-.task-title{font-weight:700;font-size:1rem;margin-bottom:6px}
-.task-date{font-size:0.85rem;color:var(--muted);margin-bottom:12px}
+    table { width:100%; border-collapse:collapse; min-width:600px; }
+    th, td { padding:10px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.08); }
+    th { color:var(--accent-2); font-weight:600; position:sticky; top:0; background:var(--card); z-index:2; }
+    .jawaban-benar { color:#22c55e; font-weight:600; }
+    .jawaban-salah { color:#ef4444; font-weight:600; }
 
-/* Tombol dalam card */
-.task-btns {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: auto;
-}
-.task-btns button {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-}
-.task-btns button:hover { opacity: 0.85; }
-.task-btns .btn-edit {
-  background: linear-gradient(90deg, #00d4ff, #8b5cf6);
-}
-.task-btns .btn-delete {
-  background: linear-gradient(90deg, #ff5f6d, #ffc371);
-}
-
-/* Tabel riwayat */
-.table-wrapper { width:100%; min-width:600px; }
-table{width:100%;border-collapse:collapse;}
-thead tr{background: rgba(139, 92, 246, 0.1); }
-th, td{
-  padding:10px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.08);
-}
-th { color: var(--accent-2); font-weight:600; }
-.jawaban-benar{color:#22c55e;font-weight:600;}
-.jawaban-salah{color:#ef4444;font-weight:600;}
-.loading{text-align:center;padding:20px;font-size:0.95rem;color:var(--muted)}
-
-/* Responsif */
-@media (max-width:920px){
-  .task-list { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width:640px){
-  .wrap{flex-direction:column}
-  .sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:12px}
-  .content{padding:14px}
-  .task-list{grid-template-columns:1fr}
-}
-</style>
+    /* Bottom nav */
+    .bottom-nav { display:none; }
+    @media (max-width:640px) {
+      .wrap { flex-direction:column; }
+      .sidebar { display:none; }
+      .content { padding:14px; }
+      .task-list { grid-template-columns:1fr; max-height:65vh; }
+      #riwayat-list { max-height:60vh; }
+      .bottom-nav {
+        display:flex; position:fixed; bottom:0; left:0; right:0;
+        background:var(--card); border-top:1px solid rgba(255,255,255,0.1);
+        height:60px; justify-content:space-around; align-items:center;
+      }
+      .bottom-nav a {
+        color:var(--muted); text-decoration:none; font-size:0.85rem;
+        display:flex; flex-direction:column; align-items:center;
+      }
+      .bottom-nav a.active { color:var(--accent); font-weight:700; }
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <aside class="sidebar">
-    <div class="logo">
-      <img id="ikon-user" src="profil2.png" alt="ikon">
-      <div><div class="title">MyDashboard</div><small style="color:var(--muted)">Selamat datang</small></div>
-    </div>
-    <div class="profile-card">
-      <div class="p-info">
-        <h3 id="nama-user">--</h3>
-        <small id="email-user">--</small>
+  <div class="wrap">
+    <aside class="sidebar">
+      <div class="logo">
+        <img id="ikon-user" src="profil2.png" alt="ikon">
+        <div>
+          <div class="title">MyDashboard</div>
+          <small style="color:var(--muted)">Selamat datang</small>
+        </div>
       </div>
-    </div>
-    <nav class="nav">
-      <a href="beranda.html">Beranda <small>›</small></a>
-      <a href="profil.html">Profil <small>›</small></a>
-      <a href="tugas.html">Tugas <small>›</small></a>
-      <a href="chat.html">Pesan <small>›</small></a>
-      <a href="kuis.html">Manajemen Kuis<small>›</small></a>
-    </nav>
-    <div style="margin-top:auto;color:var(--muted);font-size:0.85rem">Versi alpha • &copy; 2025</div>
-  </aside>
-
-  <main class="content">
-    <div class="top">
-      <h2>Manajemen Kuis</h2>
-      <button id="btn-logout" class="btn">Keluar</button>
-    </div>
-    <div class="menu-tabs">
-      <button id="tab-active" class="active">Soal Kuis</button>
-      <button id="tab-history">Riwayat Kuis</button>
-    </div>
-    <form id="kuis-form">
-      <textarea id="question" rows="3" placeholder="Pertanyaan..." required></textarea>
-      <input type="text" id="correct" placeholder="Jawaban Benar..." required />
-      <button type="submit">Tambah Kuis</button>
-    </form>
-
-    <div class="task-wrapper scroll-box">
-      <div class="task-list" id="kuis-list">
-        <div class="loading">⏳ Memuat kuis...</div>
+      <div class="profile-card">
+        <div class="p-info">
+          <h3 id="nama-user">--</h3>
+          <small id="email-user">--</small>
+        </div>
       </div>
-    </div>
+      <nav class="nav">
+        <a href="beranda.html">Beranda <small>›</small></a>
+        <a href="profil.html">Profil <small>›</small></a>
+        <a href="tugas.html">Tugas <small>›</small></a>
+        <a href="chat.html">Pesan <small>›</small></a>
+        <a href="kuis.html" class="active">Manajemen Kuis <small>›</small></a>
+      </nav>
+    </aside>
 
-    <div id="riwayat-list" style="display:none" class="scroll-box">
-      <div class="loading">⏳ Memuat riwayat...</div>
-    </div>
-  </main>
-</div>
+    <main class="content">
+      <div class="top">
+        <h2>Manajemen Kuis</h2>
+        <button id="btn-logout">Keluar</button>
+      </div>
+
+      <div class="menu-tabs">
+        <button id="tab-active" class="active">Soal Kuis</button>
+        <button id="tab-history">Riwayat</button>
+      </div>
+
+      <form id="kuis-form">
+        <textarea id="question" rows="3" placeholder="Pertanyaan..." required></textarea>
+        <input type="text" id="correct" placeholder="Jawaban Benar..." required />
+        <button type="submit">Simpan</button>
+      </form>
+
+      <div class="task-list" id="kuis-list">⏳ Memuat kuis...</div>
+
+      <div id="riwayat-list" style="display:none;">
+        <table>
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Pertanyaan</th>
+              <th>Jawaban Benar</th>
+              <th>Jawaban Kamu</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="riwayat-body">
+            <tr><td colspan="5" style="text-align:center;color:var(--muted)">⏳ Memuat riwayat...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <div class="bottom-nav">
+    <a href="beranda.html">🏠<span>Beranda</span></a>
+    <a href="profil.html">👤<span>Profil</span></a>
+    <a href="tugas.html">📝<span>Tugas</span></a>
+    <a href="chat.html">💬<span>Pesan</span></a>
+    <a href="kuis.html" class="active">❓<span>Kuis</span></a>
+  </div>
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://hnsvxbohvjjfikmdjfpn.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhuc3Z4Ym9odmpqZmlrbWRqZnBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0Nzk0NDMsImV4cCI6MjA2ODA1NTQ0M30.KzOeS0md4A6jeexgXxSdfuXuBbG5L1WtFginkztaPFw"
+    );
+
+    const userId = sessionStorage.getItem("currentUser");
+    if(!userId){ alert("Silakan login dulu!"); window.location.href="index.html"; }
+
+    const form=document.getElementById("kuis-form");
+    const kuisList=document.getElementById("kuis-list");
+    const riwayatList=document.getElementById("riwayat-list");
+    let editId=null;
+
+    async function loadProfile(){
+      const { data }=await supabase.from("accounts").select("fullname,email,photo").eq("id",userId).maybeSingle();
+      if(data){
+        document.getElementById("nama-user").textContent=data.fullname||"Tanpa Nama";
+        document.getElementById("email-user").textContent=data.email||"Tidak ada email";
+        if(data.photo){document.getElementById("ikon-user").src=data.photo;}
+      }
+    }
+
+    function renderKuis(data){
+      kuisList.innerHTML="";
+      if(!data.length){ kuisList.innerHTML="<p>Tidak ada kuis aktif.</p>"; return; }
+      data.forEach(k=>{
+        const card=document.createElement("div");
+        card.className="task-card";
+        card.setAttribute("data-id",k.id);
+        card.innerHTML=`
+          <div class="task-title">${k.question}</div>
+          <div class="task-date">Jawaban: ${k.answer}</div>
+          <div class="task-btns">
+            <button class="btn-edit">✏️ Edit</button>
+            <button class="btn-delete">🗑️ Hapus</button>
+          </div>`;
+        card.querySelector(".btn-edit").addEventListener("click",()=>editKuis(k.id,k.question,k.answer));
+        card.querySelector(".btn-delete").addEventListener("click",()=>deleteKuis(k.id));
+        kuisList.appendChild(card);
+      });
+    }
+
+    function renderRiwayat(data){
+      if(!data.length){ riwayatList.innerHTML="<p>Belum ada riwayat jawaban.</p>"; return; }
+      let html=`<table><thead><tr><th>No</th><th>Nama Akun</th><th>Pertanyaan</th><th>Jawaban</th><th>Status</th></tr></thead><tbody>`;
+      let no=1;
+      data.forEach(r=>{
+        if(r.user_id===userId) return;
+        const nama=r.user?.fullname||r.user_id;
+        const pertanyaan=r.quiz_questions?.question||("Q#"+r.question_id);
+        const statusClass=r.is_correct?"jawaban-benar":"jawaban-salah";
+        html+=`<tr><td>${no++}</td><td>${nama}</td><td>${pertanyaan}</td><td>${r.answer}</td><td class="${statusClass}">${r.is_correct?"Benar":"Salah"}</td></tr>`;
+      });
+      html+="</tbody></table>";
+      riwayatList.innerHTML=html;
+    }
+
+    async function loadKuis(){
+      kuisList.innerHTML="⏳ Memuat kuis...";
+      const { data,error }=await supabase.from("quiz_questions").select("*").eq("user_id",userId).order("created_at",{ascending:false});
+      if(error){ kuisList.innerHTML="<p>Gagal memuat kuis.</p>"; return; }
+      renderKuis(data);
+    }
+
+    async function loadRiwayat(){
+      riwayatList.innerHTML="⏳ Memuat riwayat...";
+      const { data,error }=await supabase.from("quiz_answers").select(`id,answer,is_correct,user_id,question_id, quiz_questions:question_id (question), user:accounts (fullname)`).order("created_at",{ascending:true});
+      if(error){ riwayatList.innerHTML="<p>Gagal memuat riwayat.</p>"; return; }
+      renderRiwayat(data);
+    }
+
+    function editKuis(id,q,a){ editId=id; document.getElementById("question").value=q; document.getElementById("correct").value=a; form.scrollIntoView({behavior:'smooth'}); }
+    async function deleteKuis(id){ if(!confirm("Hapus kuis ini?")) return; await supabase.from("quiz_questions").delete().eq("id",id).eq("user_id",userId); loadKuis(); }
+
+    form.addEventListener("submit",async e=>{
+      e.preventDefault();
+      const q=document.getElementById("question").value.trim();
+      const a=document.getElementById("correct").value.trim();
+      if(editId){
+        await supabase.from("quiz_questions").update({question:q,answer:a}).eq("id",editId).eq("user_id",userId);
+        editId=null;
+      } else {
+        await supabase.from("quiz_questions").insert([{question:q,answer:a,user_id:userId}]);
+      }
+      form.reset(); loadKuis();
+    });
+
+    document.getElementById("btn-logout").addEventListener("click",()=>{sessionStorage.clear();alert("Anda telah logout.");window.location.href="index.html";});
+    document.getElementById("tab-active").addEventListener("click",()=>{document.getElementById("tab-active").classList.add("active");document.getElementById("tab-history").classList.remove("active");form.style.display="flex";kuisList.style.display="grid";riwayatList.style.display="none";loadKuis();});
+    document.getElementById("tab-history").addEventListener("click",()=>{document.getElementById("tab-history").classList.add("active");document.getElementById("tab-active").classList.remove("active");form.style.display="none";kuisList.style.display="none";riwayatList.style.display="block";loadRiwayat();});
+
+    const quizChannel=supabase.channel('quiz-rt');
+    quizChannel.on('postgres_changes',{event:'*',schema:'public',table:'quiz_questions'},()=>{if(document.getElementById("tab-active").classList.contains("active")) loadKuis();});
+    quizChannel.on('postgres_changes',{event:'*',schema:'public',table:'quiz_answers'},()=>{if(document.getElementById("tab-history").classList.contains("active")) loadRiwayat();});
+    quizChannel.subscribe();
+
+    loadProfile();
+    loadKuis();
+  </script>
+</body>
+</html>
 
 <script>
 const supabase = window.supabase.createClient(
