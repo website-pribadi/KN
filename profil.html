@@ -1,182 +1,163 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Profil Pengguna</title>
-  <link rel="icon" href="ikon2.png" type="image/png">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<style>
-  :root{
-    --bg:#0b1020; --card:#111421; --accent:#00d4ff; --accent-2:#8b5cf6;
-    --muted:#9aa3b2; --glass: rgba(255,255,255,0.05);
-    --radius:14px;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;height:100%;background:linear-gradient(180deg,var(--bg),#071022);color:#e8eef6}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Profil Pengguna</title>
+    <link rel="icon" href="ikon2.png" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        :root{
+            --bg:#0b1020; --card:#111421; --accent:#00d4ff; --accent-2:#8b5cf6;
+            --muted:#9aa3b2; --glass: rgba(255,255,255,0.04); --radius:14px;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#071022);color:#e8eef6}
+        .wrap{display:flex;min-height:100vh}
+        .sidebar{
+            width:260px;padding:28px;background:linear-gradient(180deg,var(--card), rgba(17,20,33,0.6));backdrop-filter:blur(6px);
+            border-right:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column;gap:18px
+        }
+        .logo{display:flex;gap:12px;align-items:center}
+        .logo img{width:44px;height:44px;border-radius:10px;object-fit:cover}
+        .logo .title{font-weight:700;font-size:1.05rem}
+        .profile-card{background:var(--glass);padding:14px;border-radius:12px;display:flex;flex-direction:column;gap:4px}
+        .p-info h3{margin:0;font-size:0.95rem}
+        .p-info small{color:var(--muted)}
+        .nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+        .nav a{padding:10px;border-radius:10px;text-decoration:none;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+        .nav a:hover{background:linear-gradient(90deg, rgba(0,212,255,0.06), rgba(139,92,246,0.04));color:var(--accent)}
+        .nav a.active{background:linear-gradient(90deg, rgba(0,212,255,0.1), rgba(139,92,246,0.08));color:var(--accent)}
 
-  .wrap{display:flex;min-height:100vh}
+        .content{flex:1;padding:28px;display:flex;flex-direction:column;gap:22px}
+        .top{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:15px}
+        .grid{display:grid;grid-template-columns:1fr;gap:18px;max-width:600px}
 
-  /* Sidebar */
-  .sidebar{
-    width:260px;padding:28px;
-    background:linear-gradient(180deg,var(--card), rgba(17,20,33,0.6));
-    backdrop-filter:blur(10px);
-    border-right:1px solid rgba(255,255,255,0.03);
-    display:flex;flex-direction:column;gap:18px
-  }
-  .logo{display:flex;gap:12px;align-items:center}
-  .logo img{width:44px;height:44px;border-radius:10px;object-fit:cover}
-  .logo .title{font-weight:700;font-size:1.05rem}
-  .profile-card{background:var(--glass);padding:14px;border-radius:12px;display:flex;flex-direction:column;gap:4px}
-  .p-info h3{margin:0;font-size:0.95rem}
-  .p-info small{color:var(--muted)}
-  .nav{display:flex;flex-direction:column;gap:8px;margin-top:6px}
-  .nav a{padding:10px;border-radius:10px;text-decoration:none;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
-  .nav a:hover{background:linear-gradient(90deg, rgba(0,212,255,0.1), rgba(139,92,246,0.08));color:var(--accent)}
-  .nav a.active{background:linear-gradient(90deg, rgba(0,212,255,0.1), rgba(139,92,246,0.08));color:var(--accent)}
+        /* Styling Form Profil */
+        .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:20px;border-radius:var(--radius);box-shadow:0 6px 30px rgba(11,16,32,0.5);}
+        .card h2{margin-top:0;font-size:1.4rem;color:var(--accent-2)}
+        .form-group{margin-bottom:15px}
+        .form-group label{display:block;margin-bottom:8px;color:var(--muted);font-size:0.9rem}
+        
+        .form-group input:disabled, .form-group select:disabled, .form-group textarea:disabled {
+            background: #222533; 
+            color: var(--muted);
+            cursor: not-allowed;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
 
-  /* Konten */
-  .content{flex:1;padding:28px;display:flex;flex-direction:column;gap:24px;padding-bottom:90px}
+        .form-group input:not(:disabled), .form-group select:not(:disabled), .form-group textarea:not(:disabled),
+        .form-group input[type="text"], .form-group input[type="file"], 
+        .form-group input[type="date"], .form-group input[type="tel"],
+        .form-group select, .form-group textarea {
+            width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.08);
+            background:rgba(0,0,0,0.2);color:inherit;font-size:1rem;transition:border-color 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {border-color:var(--accent);outline:none}
+        
+        .btn{padding:10px 16px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041021;font-weight:700;transition:opacity 0.3s}
+        .btn:hover{opacity:0.9}
 
-  /* Foto profil header */
-  .profil-header{display:flex;justify-content:center;margin-top:10px;margin-bottom:16px}
-  .profil-header img{
-    width:110px;height:110px;border-radius:50%;object-fit:cover;
-    border:3px solid var(--accent);
-    box-shadow:0 4px 12px rgba(0,0,0,0.4);
-  }
+        .profile-photo-area{display:flex;flex-direction:column;align-items:center;margin-bottom:20px;}
+        #profile-photo-display{
+            width:120px;height:120px;border-radius:50%;object-fit:cover;margin-bottom:15px;
+            border:4px solid var(--accent);box-shadow:0 0 15px rgba(0,212,255,0.4);
+        }
+        #file-upload-label{
+            cursor:pointer;padding:8px 15px;border-radius:8px;background:var(--glass);
+            color:var(--accent);border:1px solid var(--accent);font-size:0.9rem;
+            display: none; 
+        }
+        #file-input{display:none;}
+        #profile-form.edit-mode #file-upload-label { display: block; }
 
-  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.05);padding-bottom:15px}
-  .top h1{margin:0;font-size:1.6rem;font-weight:700;color:var(--accent-2)}
-
-  .card{background:rgba(255,255,255,0.05);backdrop-filter:blur(8px);
-    border:1px solid rgba(255,255,255,0.1);padding:20px;border-radius:var(--radius);
-    box-shadow:0 6px 30px rgba(11,16,32,0.5);}
-  .card h2{margin:0 0 15px;color:var(--accent)}
-
-  .form-group{margin-bottom:15px}
-  .form-group label{display:block;margin-bottom:8px;color:var(--muted);font-size:0.9rem}
-  .form-group input,.form-group select,.form-group textarea{
-    width:100%;padding:12px;border-radius:10px;
-    border:1px solid rgba(255,255,255,0.08);
-    background:rgba(0,0,0,0.2);color:inherit;font-size:1rem
-  }
-  .form-group input:disabled,.form-group select:disabled,.form-group textarea:disabled{
-    background:#222533;color:var(--muted);cursor:not-allowed
-  }
-  .btn{padding:10px 16px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041021;font-weight:700}
-  .btn:hover{opacity:0.9}
-
-  #file-upload-label{cursor:pointer;padding:8px 15px;border-radius:8px;background:var(--glass);
-    color:var(--accent);border:1px solid var(--accent);font-size:0.9rem;display:none}
-  #file-input{display:none}
-  #profile-form.edit-mode #file-upload-label{display:block}
-
-  /* Bottom nav */
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;height:62px;background:rgba(17,20,33,0.9);
-    border-top:1px solid rgba(255,255,255,0.05);display:none;justify-content:space-around;align-items:center;z-index:1000;backdrop-filter:blur(10px)}
-  .bottom-nav a{flex:1;text-align:center;text-decoration:none;color:#e8eef6;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 4px;border-radius:10px}
-  .bottom-nav a.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#041021;font-weight:700}
-
-  /* Responsive */
-  @media(max-width:640px){
-    .wrap{flex-direction:column}
-    .sidebar{display:none}
-    .content{padding:16px;padding-bottom:90px}
-    .bottom-nav{display:flex}
-  }
-</style>
+        @media (max-width:640px){.wrap{flex-direction:column}.sidebar{width:100%;flex-direction:row;overflow-x:auto;padding:12px}.content{padding:14px}}
+    </style>
 </head>
 <body>
-  <div class="wrap">
-    <aside class="sidebar">
-      <div class="logo">
-        <img id="ikon-user" src="profil2.png" alt="ikon">
-        <div><div class="title">MyDashboard</div><small style="color:var(--muted)">Selamat datang</small></div>
-      </div>
-      <div class="profile-card">
-        <div class="p-info">
-          <h3 id="nama-user">--</h3>
-          <small id="email-user">--</small>
-        </div>
-      </div>
-      <nav class="nav">
-        <a href="beranda.html">Beranda <small>›</small></a>
-        <a href="profil.html" class="active">Profil <small>›</small></a>
-        <a href="tugas.html">Tugas <small>›</small></a>
-        <a href="chat.html">Pesan <small>›</small></a>
-        <a href="kuis.html">Manajemen Kuis <small>›</small></a>
-      </nav>
-    </aside>
+    <div class="wrap">
+        <aside class="sidebar">
+            <div class="logo">
+                <img id="ikon-user" src="profil2.png" alt="ikon">
+                <div>
+                    <div class="title">MyDashboard</div>
+                    <small style="color:var(--muted)">Selamat datang</small>
+                </div>
+            </div>
+            <div class="profile-card">
+                <div class="p-info">
+                    <h3 id="nama-user">--</h3>
+                    <small id="email-user">--</small>
+                </div>
+            </div>
+            <nav class="nav">
+                <a href="beranda.html">Beranda <small>›</small></a>
+                <a href="profil.html" class="active">Profil <small>›</small></a>
+                <a href="tugas.html">Tugas <small>›</small></a>
+                <a href="chat.html">Pesan <small>›</small></a>
+                <a href="kuis.html">Menejemen Kuis<small>›</small></a>
+            </nav>
+            <div style="margin-top:auto;color:var(--muted);font-size:0.85rem">
+                Versi alpha • &copy; 2025
+            </div>
+        </aside>
 
-    <main class="content">
-      <!-- Foto profil atas -->
-      <div class="profil-header">
-        <img id="profile-photo-display" src="profil2.png" alt="Foto Profil">
-      </div>
+        <main class="content">
+            <div class="top">
+                <div style="font-size:1.25rem;font-weight:700">Profil Saya</div>
+                <button id="btn-logout" class="btn" style="padding:6px 12px;">Keluar</button>
+            </div>
+            <div class="grid">
+                <section class="card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h2>Informasi Akun</h2>
+                        <button type="button" class="btn" id="btn-toggle-edit" style="padding:8px 12px; background:var(--accent-2); color:#e8eef6;">Edit Profil</button>
+                    </div>
+                    
+                    <form id="profile-form">
+                        <div class="profile-photo-area">
+                            <img id="profile-photo-display" src="profil2.png" alt="Foto Profil">
+                            <input type="file" id="file-input" accept="image/*">
+                            <label for="file-input" id="file-upload-label">Ubah Foto</label>
+                        </div>
 
-      <div class="top">
-        <h1>Profil Saya</h1>
-        <button id="btn-logout" class="btn" style="padding:6px 12px;">Keluar</button>
-      </div>
-
-      <section class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <h2>Informasi Akun</h2>
-          <button type="button" class="btn" id="btn-toggle-edit" style="padding:8px 12px;background:var(--accent-2);color:#e8eef6;">Edit Profil</button>
-        </div>
-
-        <form id="profile-form">
-          <!-- Tombol upload saja -->
-          <input type="file" id="file-input" accept="image/*">
-          <label for="file-input" id="file-upload-label">Ubah Foto</label>
-
-          <div class="form-group">
-            <label for="fullname">Nama Lengkap</label>
-            <input type="text" id="fullname" disabled>
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="text" id="email" disabled>
-          </div>
-          <div class="form-group">
-            <label for="phone">Nomor Telepon</label>
-            <input type="tel" id="phone" disabled>
-          </div>
-          <div class="form-group">
-            <label for="birth">Tanggal Lahir</label>
-            <input type="date" id="birth" disabled>
-          </div>
-          <div class="form-group">
-            <label for="gender">Jenis Kelamin</label>
-            <select id="gender" disabled>
-              <option value="">Pilih</option>
-              <option value="Laki-laki">Laki-laki</option>
-              <option value="Perempuan">Perempuan</option>
-              <option value="Lainnya">Lainnya</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="address">Alamat Lengkap</label>
-            <textarea id="address" rows="3" disabled></textarea>
-          </div>
-          <button type="submit" class="btn" id="btn-update" style="display:none;">Simpan Perubahan</button>
-        </form>
-        <p id="status-message" style="margin-top:15px;color:var(--accent);font-weight:600;"></p>
-      </section>
-    </main>
-  </div>
-
-  <!-- Bottom nav -->
-  <nav class="bottom-nav">
-    <a href="beranda.html"><span>🏠</span><span>Beranda</span></a>
-    <a href="profil.html" class="active"><span>👤</span><span>Profil</span></a>
-    <a href="tugas.html"><span>📝</span><span>Tugas</span></a>
-    <a href="chat.html"><span>💬</span><span>Chat</span></a>
-    <a href="kuis.html"><span>❓</span><span>Kuis</span></a>
-  </nav>
+                        <div class="form-group">
+                            <label for="fullname">Nama Lengkap</label>
+                            <input type="text" id="fullname" disabled placeholder="Masukkan Nama Lengkap Anda" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="text" id="email" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Nomor Telepon</label>
+                            <input type="tel" id="phone" disabled placeholder="Contoh: 081234567890">
+                        </div>
+                        <div class="form-group">
+                            <label for="birth">Tanggal Lahir</label>
+                            <input type="date" id="birth" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Jenis Kelamin</label>
+                            <select id="gender" disabled>
+                                <option value="">Pilih</option>
+                                <option value="Laki-laki">Laki-laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                                <option value="Lainnya">Lainnya</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Alamat Lengkap</label>
+                            <textarea id="address" rows="3" disabled placeholder="Masukkan alamat lengkap Anda"></textarea>
+                        </div>
+                        <button type="submit" class="btn" id="btn-update" style="display:none;">Simpan Perubahan</button>
+                    </form>
+                    <p id="status-message" style="margin-top:15px; color:var(--accent); font-weight:600;"></p>
+                </section>
+            </div>
+        </main>
+    </div>
 
 <script>
     const userId = sessionStorage.getItem("currentUser");
