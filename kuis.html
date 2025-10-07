@@ -238,10 +238,10 @@
     <a href="kuis.html" class="active">❓<span>Kuis</span></a>
   </div>
   <script>
-    const supabase = window.supabase.createClient(
-      "https://hnsvxbohvjjfikmdjfpn.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhuc3Z4Ym9odmpqZmlrbWRqZnBuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0Nzk0NDMsImV4cCI6MjA2ODA1NTQ0M30.KzOeS0md4A6jeexgXxSdfuXuBbG5L1WtFginkztaPFw"
-    );
+const supabase = window.supabase.createClient(
+  "https://bwfoeapwqdrinqgccxpw.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ3Zm9lYXB3cWRyaW5xZ2NjeHB3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4MTUzNTYsImV4cCI6MjA3NTM5MTM1Nn0.grJkA6XjIvAOWzmWTMx-Rp8BUVdvwTd_pawNQsM0Vt8"
+);
 
     const userId = sessionStorage.getItem("currentUser");
     if(!userId){ alert("Silakan login dulu!"); window.location.href="index.html"; }
